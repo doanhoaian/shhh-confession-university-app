@@ -58,7 +58,7 @@ git push origin feature/<ten-nhanh>
 ### 5. Mở PR từ `feature/<ten-nhanh>` vào `develop` trên GitHub
 
 - Vào repository trên GitHub
-- Chọn **"Pull request"**
+- Chọn **"Compare & pull request"**
 - Đặt tiêu đề rõ ràng (ví dụ: `Thêm giao diện màn hình đăng nhập`)
 - Mô tả ngắn gọn những thay đổi trong PR
 - Bạn **không cần người khác duyệt**, nhưng **không thể tự merge** – PR sẽ được xem xét và merge bởi quản lý dự án
