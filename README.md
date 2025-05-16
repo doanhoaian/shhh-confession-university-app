@@ -1,6 +1,6 @@
 <!--suppress ALL -->
 <p align="center">
-  <img src="" alt="Shhh logo" width="120" />
+  <img src="app/src/main/ic_launcher-rounded.png" alt="Shhh logo" width="120" style="border-radius: 50px;"/>
 </p>
 
 <h1 align="center">Shhh – Ứng dụng Confession ẩn danh cho sinh viên</h1>
