@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "683659692741",
+    "project_id": "cfs-service-4af0e",
+    "storage_bucket": "cfs-service-4af0e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683659692741:android:302f1758318e63715ffeac",
+        "android_client_info": {
+          "package_name": "vn.dihaver.tech.shhh.confession"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJPQb3Rjli1LFo-rn9FltdsuzDpLzV2uE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
