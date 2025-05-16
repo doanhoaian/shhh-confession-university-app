@@ -41,3 +41,6 @@ captures/
 
 # Kotlin
 .kotlin
+
+# Firebase
+**/google-services.json
