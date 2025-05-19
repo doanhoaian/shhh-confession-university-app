@@ -10,10 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
-import vn.dihaver.tech.shhh.confession.navigation.AppNavGraph
+import vn.dihaver.tech.shhh.confession.feature.auth.ui.RegisterScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -26,17 +25,13 @@ class MainActivity : ComponentActivity() {
             SystemBarStyle.dark(Color.TRANSPARENT)
         )
 
-        val isLoggedIn = false
-
         setContent {
             ShhhTheme {
-                val navController = rememberNavController()
-
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    AppNavGraph(
-                        navController = navController,
-                        isLoggedIn = isLoggedIn
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.background
+                ) {
+                    RegisterScreen()
                 }
             }
         }
