@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTextField
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhButton
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 
 @Composable
 fun RegisterStep1Screen(
@@ -25,13 +27,15 @@ fun RegisterStep1Screen(
 ) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    var passwordText by remember { mutableStateOf("") }
+    var confirmPasswordText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var usernameError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isConfirmPasswordVisible by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -47,7 +51,6 @@ fun RegisterStep1Screen(
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,9 +65,7 @@ fun RegisterStep1Screen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(
                     onClick = {},
                     modifier = Modifier.size(40.dp)
@@ -131,7 +132,7 @@ fun RegisterStep1Screen(
                 text = "Username",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             ShhhTextField(
                 value = username,
                 onValueChange = { newValue ->
@@ -150,13 +151,13 @@ fun RegisterStep1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = "Email",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             ShhhTextField(
                 value = email,
                 onValueChange = { newValue ->
@@ -179,21 +180,22 @@ fun RegisterStep1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = "Password",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             ShhhTextField(
-                value = password,
-                onValueChange = { newValue ->
-                    password = newValue
-                    passwordError = if (newValue.isBlank()) "Password cannot be empty" else null
-                },
+                value = passwordText,
+                onValueChange = { passwordText = it },
                 hint = "Enter your password",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = painterResource(id = if (isPasswordVisible) R.drawable.svg_vector_hidden else R.drawable.svg_vector_presently),
+                trailingIconContentDescription = if (isPasswordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu",
+                onTrailingIconClick = { isPasswordVisible = !isPasswordVisible }
             )
             passwordError?.let {
                 Text(
@@ -204,25 +206,20 @@ fun RegisterStep1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = "Confirm Password",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            )
-            Spacer(modifier = Modifier.height(4.dp))
+
+
+            Spacer(modifier = Modifier.height(6.dp))
             ShhhTextField(
-                value = confirmPassword,
-                onValueChange = { newValue ->
-                    confirmPassword = newValue
-                    confirmPasswordError = when {
-                        newValue.isBlank() -> "Please confirm your password"
-                        newValue != password -> "Passwords do not match"
-                        else -> null
-                    }
-                },
+                value = confirmPasswordText,
+                onValueChange = { confirmPasswordText = it },
                 hint = "Confirm your password",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = painterResource(id = if (isConfirmPasswordVisible) R.drawable.svg_vector_hidden else R.drawable.svg_vector_presently),
+                trailingIconContentDescription = if (isConfirmPasswordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu",
+                onTrailingIconClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }
             )
             confirmPasswordError?.let {
                 Text(
@@ -233,16 +230,17 @@ fun RegisterStep1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(95.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 ShhhButton(
-                    label = "Next Step >",
+                    label = "Next Step  >",
                     isLoading = isLoading,
                     enabled = !isLoading,
+                    modifier = Modifier.widthIn(min = 120.dp, max = 160.dp),
                     onClick = {
                         usernameError = if (username.isBlank()) "Username cannot be empty" else null
                         emailError = when {
@@ -250,10 +248,10 @@ fun RegisterStep1Screen(
                             !isValidEmail(email) -> "Invalid email format"
                             else -> null
                         }
-                        passwordError = if (password.isBlank()) "Password cannot be empty" else null
+                        passwordError = if (passwordText.isBlank()) "Password cannot be empty" else null
                         confirmPasswordError = when {
-                            confirmPassword.isBlank() -> "Please confirm your password"
-                            confirmPassword != password -> "Passwords do not match"
+                            confirmPasswordText.isBlank() -> "Please confirm your password"
+                            confirmPasswordText != passwordText -> "Passwords do not match"
                             else -> null
                         }
 
@@ -261,10 +259,10 @@ fun RegisterStep1Screen(
                             isLoading = true
                             scope.launch {
                                 try {
-                                    onNextStep(username, email, password)
-                                    snackbarHostState.showSnackbar("Registration successful!")
+                                    onNextStep(username, email, passwordText)
+                                    snackbarHostState.showSnackbar("Next step succeeded")
                                 } catch (e: Exception) {
-                                    snackbarHostState.showSnackbar("Registration failed: ${e.message}")
+                                    snackbarHostState.showSnackbar("Error: ${e.message}")
                                 } finally {
                                     isLoading = false
                                 }
@@ -274,24 +272,7 @@ fun RegisterStep1Screen(
                 )
             }
         }
+        SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 
-    SnackbarHost(
-        hostState = snackbarHostState,
-        modifier = Modifier.padding(16.dp)
-    )
-
-    LaunchedEffect(usernameError, emailError, passwordError, confirmPasswordError) {
-        val errorMessage = listOfNotNull(
-            usernameError,
-            emailError,
-            passwordError,
-            confirmPasswordError
-        ).firstOrNull()
-        if (errorMessage != null) {
-            scope.launch {
-                snackbarHostState.showSnackbar(errorMessage)
-            }
-        }
-    }
 }
