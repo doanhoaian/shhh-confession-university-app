@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Shhh</string>
+    <string name="action_back">Back</string>
+    <string name="action_continue">Continue</string>
+    <string name="label_email">Email</string>
+    <string name="app_web_client_id">683659692741-0k06hphcbfdvsh0d361a3m0kunt0eh28.apps.googleusercontent.com</string>
 </resources>
