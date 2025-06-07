@@ -22,6 +22,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // BuildConfig
+        buildConfigField("int", "VERSION_CODE", versionCode.toString())
+        buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
     }
 
     buildTypes {
@@ -42,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -61,6 +66,7 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.nav.compose)
     implementation(libs.nav.fragment)
+    implementation(libs.coil.compose)
     implementation(libs.nav.ui)
 
     // Splash
@@ -86,6 +92,9 @@ dependencies {
 
     // Google
     implementation(libs.google.signin)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     // Retrofit + Gson
     implementation(libs.retrofit)
@@ -104,6 +113,12 @@ dependencies {
 
     // Jetbrains Kotlinx
     implementation(libs.serialization.json)
+
+    // Other
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.ohteepee)
+    implementation(libs.coil.svg)
+    implementation(libs.compose.shimmer)
 
     // Testing
     testImplementation(libs.junit)
