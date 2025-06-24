@@ -56,11 +56,11 @@ fun InputPassScreen(
 
     BackHandler(enabled = true, onBack = onBack)
 
-    ShhhLoadingDialog(visible = isLoading, showBackground = true, message = "Đang thực hiện... sẽ nhanh thôi")
+    ShhhLoadingDialog(visible = isLoading, showBackground = true, message = "Đang thực hiện...")
 
     Scaffold(
         topBar = {
-            ShhhTopAppBar(showBack = true) { onBack() }
+            ShhhTopAppBar(showNavigation = true) { onBack() }
         },
         containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->

@@ -66,7 +66,7 @@ fun StartScreen(
     val resultSuccess by viewModel.resultSuccess.collectAsState()
     val resultError by viewModel.resultError.collectAsState()
 
-    ShhhLoadingDialog(visible = isLoading, showBackground = true, message = "Đang thực hiện... sẽ nhanh thôi")
+    ShhhLoadingDialog(visible = isLoading, showBackground = true, message = "Đang thực hiện...")
 
     resultSuccess?.let { type ->
         if (type == TypeLogin.SIGN_IN_WITH_GOOGLE) {
@@ -118,16 +118,16 @@ fun StartScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "University Confession",
+                text = "Chia sẻ Nhịp đập của bạn",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(Modifier.height(ShhhDimens.SpacerMedium))
 
             Text(
-                text = "Login to start your anonymous journey and connect with the student community",
+                text = "Một câu hỏi, một khoảnh khắc vui, hay một ý tưởng chợt loé lên... Hãy góp phần tạo nên sức sống cho cộng đồng C.A.M.P.U.S",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant

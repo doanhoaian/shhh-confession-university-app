@@ -31,9 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
 import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhButton
@@ -67,7 +65,7 @@ fun ConfirmInfoScreen(
 
     Scaffold(
         topBar = {
-            ShhhTopAppBar(showBack = true) {
+            ShhhTopAppBar(showNavigation = true) {
                 onBack()
             }
         },
@@ -127,7 +125,6 @@ fun ConfirmInfoScreen(
                     AsyncImage(
                         model = ImageRequest.Builder(context)
                             .data(user?.avatarUrl)
-                            .decoderFactory(SvgDecoder.Factory())
                             .crossfade(true)
                             .placeholder(R.drawable.svg_shhh_loading_square)
                             .error(R.drawable.svg_shhh_loading_square)

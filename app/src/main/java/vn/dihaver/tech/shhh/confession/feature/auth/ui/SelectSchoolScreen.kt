@@ -129,7 +129,7 @@ fun SelectSchoolScreen(
 
     Scaffold(
         topBar = {
-            ShhhTopAppBar(showBack = true) {
+            ShhhTopAppBar(showNavigation = true) {
                 onBack()
             }
         },

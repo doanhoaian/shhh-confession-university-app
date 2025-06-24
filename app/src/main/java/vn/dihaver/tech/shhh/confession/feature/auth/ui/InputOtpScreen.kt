@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -32,8 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeuisuite.ohteepee.OhTeePeeDefaults
 import com.composeuisuite.ohteepee.OhTeePeeInput
-import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhDialog
-import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhLoadingDialog
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTopAppBar
 import vn.dihaver.tech.shhh.confession.core.ui.component.fadeClick
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhDimens
@@ -85,7 +82,7 @@ fun InputOtpScreen(
 
     Scaffold(
         topBar = {
-            ShhhTopAppBar(showBack = true) {
+            ShhhTopAppBar(showNavigation = true) {
                 onBack()
             }
         },

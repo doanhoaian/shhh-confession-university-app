@@ -10,7 +10,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.model.AuthContext
@@ -81,37 +81,35 @@ class InputPassViewModel @AssistedInject constructor(
             try {
                 authViewModel.signInWithEmail(email, password)
 
-                authViewModel.authState
-                    .filter { state ->
-                        state is ResultLogin.Idle ||
-                                (state is ResultLogin.Loading && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL) ||
-                                (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL) ||
-                                (state is ResultLogin.Error && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL)
+                val endState = authViewModel.authState.first { state ->
+                    state is ResultLogin.Idle ||
+                            (state is ResultLogin.Loading && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL) ||
+                            (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL) ||
+                            (state is ResultLogin.Error && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL)
+                }
+
+                when (endState) {
+                    is ResultLogin.Success -> {
+                        isLoading = false
+                        authViewModel.updateAuthContext(AuthContext.Email.Login)
+                        onNext()
                     }
-                    .collect { state ->
-                        when (state) {
-                            is ResultLogin.Success -> {
-                                isLoading = false
-                                authViewModel.updateAuthContext(AuthContext.Email.Login)
-                                onNext()
-                            }
 
-                            is ResultLogin.Error -> {
-                                isLoading = false
-                                isError = true
-                                errorMessage = when (state.msgError) {
-                                    ERROR_INVALID_CREDENTIAL -> "Mật khẩu không đúng"
-                                    ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
-                                    ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
-                                    ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
-                                    else -> "Có lỗi xảy ra. Vui lòng thử lại"
-                                }
-                                Log.e(TAG, "Lỗi đăng nhập: ${state.msgError} - ${state.message}")
-                            }
-
-                            else -> {}
+                    is ResultLogin.Error -> {
+                        isLoading = false
+                        isError = true
+                        errorMessage = when (endState.msgError) {
+                            ERROR_INVALID_CREDENTIAL -> "Mật khẩu không đúng"
+                            ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
+                            ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
+                            ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
+                            else -> "Có lỗi xảy ra. Vui lòng thử lại"
                         }
+                        Log.e(TAG, "Lỗi đăng nhập: ${endState.msgError} - ${endState.message}")
                     }
+
+                    else -> {}
+                }
             } catch (e: Exception) {
                 isLoading = false
                 isError = true

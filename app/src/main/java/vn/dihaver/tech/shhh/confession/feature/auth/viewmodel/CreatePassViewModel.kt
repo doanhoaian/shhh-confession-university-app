@@ -11,7 +11,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.ResetPasswordUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
@@ -122,29 +122,30 @@ class CreatePassViewModel @AssistedInject constructor(
                 when (authContext.value) {
                     is AuthContext.Email.Register -> {
                         authViewModel.signUpWithEmail(email, password)
-                        authViewModel.authState
-                            .filter { state ->
-                                state is ResultLogin.Idle ||
-                                        (state is ResultLogin.Loading && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
-                                        (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
-                                        (state is ResultLogin.Error && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL)
+
+                        val endState = authViewModel.authState.first { state ->
+                            state is ResultLogin.Idle ||
+                                    (state is ResultLogin.Loading && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
+                                    (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
+                                    (state is ResultLogin.Error && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL)
+                        }
+                        if (endState is ResultLogin.Success) {
+                            isLoading = false
+                            onNext()
+                        } else if (endState is ResultLogin.Error) {
+                            isLoading = false
+                            isError = true
+                            errorMessage = when (endState.msgError) {
+                                MsgError.ERROR_INVALID_CREDENTIAL -> "Thông tin đăng nhập không hợp lệ"
+                                MsgError.ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
+                                MsgError.ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
+                                MsgError.ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
+                                else -> "Có lỗi xảy ra. Vui lòng thử lại"
                             }
-                            .collect { state ->
-                            if (state is ResultLogin.Success) {
-                                isLoading = false
-                                onNext()
-                            } else if (state is ResultLogin.Error) {
-                                isLoading = false
-                                isError = true
-                                errorMessage = when (state.msgError) {
-                                    MsgError.ERROR_INVALID_CREDENTIAL -> "Thông tin đăng nhập không hợp lệ"
-                                    MsgError.ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
-                                    MsgError.ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
-                                    MsgError.ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
-                                    else -> "Có lỗi xảy ra. Vui lòng thử lại"
-                                }
-                                Log.e(TAG, "Lỗi đăng nhập: ${state.msgError} - ${state.message}")
-                            }
+                            Log.e(
+                                TAG,
+                                "Lỗi đăng nhập: ${endState.msgError} - ${endState.message}"
+                            )
                         }
                     }
 
