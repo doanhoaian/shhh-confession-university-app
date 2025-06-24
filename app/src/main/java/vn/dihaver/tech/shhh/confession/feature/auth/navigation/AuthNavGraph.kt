@@ -36,8 +36,8 @@ private const val TAG = "AAA-AuthNavGraph"
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
     navigation(
-        route = NavRoutes.AUTH_GRAPH,
-        startDestination = NavRoutes.START,
+        route = NavRoutes.Auth.GRAPH,
+        startDestination = NavRoutes.Auth.START,
         enterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Left,
@@ -84,7 +84,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
     ) {
 
-        composable(NavRoutes.START) {
+        composable(NavRoutes.Auth.START) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val startViewModel = hiltViewModel(
                 creationCallback = { factory: StartViewModel.Factory ->
@@ -97,8 +97,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 onNext = {
                     val nextRoute = authViewModel.getNextRoute()
                     navController.navigate(nextRoute) {
-                        if (nextRoute == NavRoutes.HOME_GRAPH) {
-                            popUpTo(NavRoutes.AUTH_GRAPH) {
+                        if (nextRoute == NavRoutes.Home.GRAPH) {
+                            popUpTo(NavRoutes.Auth.GRAPH) {
                                 inclusive = true
                             }
                         }
@@ -108,7 +108,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(NavRoutes.INPUT_EMAIL) {
+        composable(NavRoutes.Auth.INPUT_EMAIL) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val inputEmailViewModel = hiltViewModel(
                 creationCallback = { factory: InputEmailViewModel.Factory ->
@@ -126,7 +126,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(NavRoutes.INPUT_PASSWORD) {
+        composable(NavRoutes.Auth.INPUT_PASSWORD) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val inputPassViewModel: InputPassViewModel = hiltViewModel(
                 creationCallback = { factory: InputPassViewModel.Factory ->
@@ -138,8 +138,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 onNext = {
                     val nextRoute = authViewModel.getNextRoute()
                     navController.navigate(nextRoute) {
-                        if (nextRoute == NavRoutes.HOME_GRAPH) {
-                            popUpTo(NavRoutes.AUTH_GRAPH) {
+                        if (nextRoute == NavRoutes.Home.GRAPH) {
+                            popUpTo(NavRoutes.Auth.GRAPH) {
                                 inclusive = true
                             }
                         }
@@ -152,7 +152,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(NavRoutes.INPUT_OTP) {
+        composable(NavRoutes.Auth.INPUT_OTP) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val inputOtpViewModel: InputOtpViewModel = hiltViewModel(
                 creationCallback = { factory: InputOtpViewModel.Factory ->
@@ -164,7 +164,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 viewModel = inputOtpViewModel,
                 onNext = {
                     navController.navigate(authViewModel.getNextRoute()) {
-                        popUpTo(NavRoutes.INPUT_OTP) {
+                        popUpTo(NavRoutes.Auth.INPUT_OTP) {
                             inclusive = true
                         }
                     }
@@ -181,7 +181,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(NavRoutes.CREATE_PASSWORD) {
+        composable(NavRoutes.Auth.CREATE_PASSWORD) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val createPassViewModel: CreatePassViewModel = hiltViewModel(
                 creationCallback = { factory: CreatePassViewModel.Factory ->
@@ -204,13 +204,13 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                         updateCurrent = false
                     )
 
-                    navController.popBackStack(NavRoutes.INPUT_PASSWORD, inclusive = false)
+                    navController.popBackStack(NavRoutes.Auth.INPUT_PASSWORD, inclusive = false)
                 },
                 onNext = {
                     val nextRoute = authViewModel.getNextRoute()
                     navController.navigate(nextRoute) {
-                        if (nextRoute == NavRoutes.HOME_GRAPH) {
-                            popUpTo(NavRoutes.AUTH_GRAPH) {
+                        if (nextRoute == NavRoutes.Home.GRAPH) {
+                            popUpTo(NavRoutes.Auth.GRAPH) {
                                 inclusive = true
                             }
                         }
@@ -223,7 +223,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(NavRoutes.SELECT_ALIAS) {
+        composable(NavRoutes.Auth.SELECT_ALIAS) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val selectAliasViewModel: SelectAliasViewModel = hiltViewModel(
                 creationCallback = { factory: SelectAliasViewModel.Factory ->
@@ -241,7 +241,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(NavRoutes.SELECT_SCHOOL) {
+        composable(NavRoutes.Auth.SELECT_SCHOOL) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val selectSchoolViewModel: SelectSchoolViewModel = hiltViewModel(
                 creationCallback = { factory: SelectSchoolViewModel.Factory ->
@@ -259,7 +259,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(NavRoutes.CONFIRM_INFO) {
+        composable(NavRoutes.Auth.CONFIRM_INFO) {
             val authViewModel = getAuthViewModel(navController) ?: return@composable
             val confirmInfoViewModel: ConfirmInfoViewModel = hiltViewModel(
                 creationCallback = { factory: ConfirmInfoViewModel.Factory ->
@@ -270,8 +270,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             ConfirmInfoScreen(
                 viewModel = confirmInfoViewModel,
                 onNext = {
-                    navController.navigate(NavRoutes.HOME_GRAPH) {
-                        popUpTo(NavRoutes.AUTH_GRAPH) {
+                    navController.navigate(NavRoutes.Home.GRAPH) {
+                        popUpTo(NavRoutes.Auth.GRAPH) {
                             inclusive = true
                         }
                     }

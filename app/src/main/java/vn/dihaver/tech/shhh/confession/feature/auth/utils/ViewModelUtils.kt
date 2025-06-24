@@ -10,7 +10,7 @@ import vn.dihaver.tech.shhh.confession.navigation.NavRoutes
 
 private fun getAuthBackStackEntry(navController: NavHostController): NavBackStackEntry? {
     return try {
-        navController.getBackStackEntry(NavRoutes.AUTH_GRAPH)
+        navController.getBackStackEntry(NavRoutes.Auth.GRAPH)
     } catch (e: IllegalArgumentException) {
         null
     }

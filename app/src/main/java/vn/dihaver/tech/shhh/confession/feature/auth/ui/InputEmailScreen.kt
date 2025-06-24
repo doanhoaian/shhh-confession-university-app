@@ -65,7 +65,7 @@ fun InputEmailScreen(
 
     Scaffold(
         topBar = {
-            ShhhTopAppBar(showBack = true) {
+            ShhhTopAppBar(showNavigation = true) {
                 onBack()
             }
         },

@@ -21,7 +21,9 @@ import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.UpdateAliasR
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.UpdateSchoolRequest
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.VerifyOtpRequest
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
     private val aliasDao: AliasDao,

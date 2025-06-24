@@ -1,7 +1,6 @@
 package vn.dihaver.tech.shhh.confession.core.data.repository
 
 import android.util.Log
-import com.google.gson.Gson
 import okio.Buffer
 import retrofit2.Response
 import vn.dihaver.tech.shhh.confession.core.data.remote.BaseResponse

@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import vn.dihaver.tech.shhh.confession.feature.auth.navigation.authNavGraph
 import vn.dihaver.tech.shhh.confession.feature.home.navigation.homeNavGraph
+import vn.dihaver.tech.shhh.confession.feature.post.navigation.postNavGraph
 
 @Composable
 fun AppNavGraph(
@@ -19,7 +20,7 @@ fun AppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = if (isLoggedIn) NavRoutes.HOME_GRAPH else NavRoutes.AUTH_GRAPH,
+        startDestination = if (isLoggedIn) NavRoutes.Home.GRAPH else NavRoutes.Auth.GRAPH,
         enterTransition = {
             fadeIn(animationSpec = tween(300)) + scaleIn(initialScale = 0.95f)
         },
@@ -35,5 +36,6 @@ fun AppNavGraph(
     ) {
         authNavGraph(navController)
         homeNavGraph(navController)
+        postNavGraph(navController)
     }
 }

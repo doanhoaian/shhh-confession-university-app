@@ -25,7 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,7 +42,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.domain.auth.model.Alias
@@ -88,7 +86,7 @@ fun SelectAliasScreen(
     }
 
     BackHandler(enabled = true, onBack = {
-        (context as? ComponentActivity)?.moveTaskToBack(true)
+        onBack()
     })
 
     updateError?.let { errorMessage ->
@@ -112,7 +110,7 @@ fun SelectAliasScreen(
 
     Scaffold(
         topBar = {
-            ShhhTopAppBar(showBack = true) {
+            ShhhTopAppBar(showNavigation = true) {
                 onBack()
             }
         },
@@ -252,7 +250,6 @@ private fun AliasItem(
         AsyncImage(
             model = ImageRequest.Builder(context)
                 .data(alias.imageUrl)
-                .decoderFactory(SvgDecoder.Factory())
                 .crossfade(true)
                 .placeholder(R.drawable.svg_shhh_loading_square)
                 .error(R.drawable.svg_shhh_loading_square)

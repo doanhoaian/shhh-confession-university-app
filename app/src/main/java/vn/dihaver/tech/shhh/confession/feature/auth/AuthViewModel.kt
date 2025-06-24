@@ -326,22 +326,22 @@ class AuthViewModel @Inject constructor(
                         return when {
                             user?.uid.isNullOrBlank() -> {
                                 updateCurrentStep(AuthStep.INPUT_EMAIL)
-                                NavRoutes.INPUT_EMAIL
+                                NavRoutes.Auth.INPUT_EMAIL
                             }
 
                             user?.aliasId.isNullOrBlank() -> {
                                 updateCurrentStep(AuthStep.SELECT_ALIAS)
-                                NavRoutes.SELECT_ALIAS
+                                NavRoutes.Auth.SELECT_ALIAS
                             }
 
                             user?.schoolId == null -> {
                                 updateCurrentStep(AuthStep.SELECT_SCHOOL)
-                                NavRoutes.SELECT_SCHOOL
+                                NavRoutes.Auth.SELECT_SCHOOL
                             }
 
                             else -> {
                                 updateCurrentStep(AuthStep.COMPLETED)
-                                NavRoutes.HOME_GRAPH
+                                NavRoutes.Home.GRAPH
                             }
                         }
                     }
@@ -352,7 +352,7 @@ class AuthViewModel @Inject constructor(
                             TAG,
                             "Lỗi không xác định tại AuthStep.START với AuthContext: $authContext"
                         )
-                        NavRoutes.START
+                        NavRoutes.Auth.START
                     }
                 }
             }
@@ -361,17 +361,17 @@ class AuthViewModel @Inject constructor(
                 when (authContext) {
                     is AuthContext.Email.ForgetPassword -> {
                         updateCurrentStep(AuthStep.INPUT_OTP)
-                        return NavRoutes.INPUT_OTP
+                        return NavRoutes.Auth.INPUT_OTP
                     }
 
                     is AuthContext.Email.Login -> {
                         updateCurrentStep(AuthStep.INPUT_PASSWORD)
-                        return NavRoutes.INPUT_PASSWORD
+                        return NavRoutes.Auth.INPUT_PASSWORD
                     }
 
                     is AuthContext.Email.Register -> {
                         updateCurrentStep(AuthStep.INPUT_OTP)
-                        return NavRoutes.INPUT_OTP
+                        return NavRoutes.Auth.INPUT_OTP
                     }
 
                     else -> {
@@ -380,7 +380,7 @@ class AuthViewModel @Inject constructor(
                             TAG,
                             "Đã xảy ra lỗi ở AuthStep.INPUT_EMAIL với AuthContext lỗi là: $authContext"
                         )
-                        return NavRoutes.START
+                        return NavRoutes.Auth.START
                     }
                 }
             }
@@ -391,24 +391,24 @@ class AuthViewModel @Inject constructor(
                         when {
                             user?.aliasId.isNullOrBlank() -> {
                                 updateCurrentStep(AuthStep.SELECT_ALIAS)
-                                return NavRoutes.SELECT_ALIAS
+                                return NavRoutes.Auth.SELECT_ALIAS
                             }
 
                             user?.schoolId == null -> {
                                 updateCurrentStep(AuthStep.SELECT_SCHOOL)
-                                return NavRoutes.SELECT_SCHOOL
+                                return NavRoutes.Auth.SELECT_SCHOOL
                             }
 
                             else -> {
                                 updateCurrentStep(AuthStep.COMPLETED)
-                                return NavRoutes.HOME_GRAPH
+                                return NavRoutes.Home.GRAPH
                             }
                         }
                     }
 
                     is AuthContext.Email.ForgetPassword -> {
                         updateCurrentStep(AuthStep.INPUT_EMAIL)
-                        return NavRoutes.INPUT_EMAIL
+                        return NavRoutes.Auth.INPUT_EMAIL
                     }
 
                     else -> {
@@ -417,7 +417,7 @@ class AuthViewModel @Inject constructor(
                             TAG,
                             "Đã xảy ra lỗi ở AuthStep.INPUT_PASSWORD với AuthContext lỗi là: $authContext"
                         )
-                        return NavRoutes.START
+                        return NavRoutes.Auth.START
                     }
                 }
             }
@@ -426,7 +426,7 @@ class AuthViewModel @Inject constructor(
                 when (authContext) {
                     is AuthContext.Email.Register, is AuthContext.Email.ForgetPassword -> {
                         updateCurrentStep(AuthStep.CREATE_PASSWORD)
-                        return NavRoutes.CREATE_PASSWORD
+                        return NavRoutes.Auth.CREATE_PASSWORD
                     }
 
                     else -> {
@@ -435,7 +435,7 @@ class AuthViewModel @Inject constructor(
                             TAG,
                             "Đã xảy ra lỗi ở AuthStep.INPUT_OTP với AuthContext lỗi là: $authContext"
                         )
-                        return NavRoutes.START
+                        return NavRoutes.Auth.START
                     }
                 }
             }
@@ -446,23 +446,23 @@ class AuthViewModel @Inject constructor(
                         when {
                             user?.aliasId.isNullOrBlank() -> {
                                 updateCurrentStep(AuthStep.SELECT_ALIAS)
-                                return NavRoutes.SELECT_ALIAS
+                                return NavRoutes.Auth.SELECT_ALIAS
                             }
 
                             user?.schoolId == null -> {
                                 updateCurrentStep(AuthStep.SELECT_SCHOOL)
-                                return NavRoutes.SELECT_SCHOOL
+                                return NavRoutes.Auth.SELECT_SCHOOL
                             }
 
                             else -> {
                                 updateCurrentStep(AuthStep.COMPLETED)
-                                return NavRoutes.HOME_GRAPH
+                                return NavRoutes.Home.GRAPH
                             }
                         }
                     }
 
                     is AuthContext.Email.ForgetPassword -> {
-                        return NavRoutes.INPUT_PASSWORD
+                        return NavRoutes.Auth.INPUT_PASSWORD
                     }
 
                     else -> {
@@ -471,28 +471,28 @@ class AuthViewModel @Inject constructor(
                             TAG,
                             "Đã xảy ra lỗi ở AuthStep.CREATE_PASSWORD với AuthContext lỗi là: $authContext"
                         )
-                        return NavRoutes.START
+                        return NavRoutes.Auth.START
                     }
                 }
             }
 
             AuthStep.SELECT_ALIAS -> {
                 updateCurrentStep(AuthStep.SELECT_SCHOOL)
-                return NavRoutes.SELECT_SCHOOL
+                return NavRoutes.Auth.SELECT_SCHOOL
             }
 
             AuthStep.SELECT_SCHOOL -> {
                 updateCurrentStep(AuthStep.CONFIRM_INFO)
-                return NavRoutes.CONFIRM_INFO
+                return NavRoutes.Auth.CONFIRM_INFO
             }
 
             AuthStep.CONFIRM_INFO -> {
                 updateCurrentStep(AuthStep.COMPLETED)
-                return NavRoutes.HOME_GRAPH
+                return NavRoutes.Home.GRAPH
             }
 
             AuthStep.COMPLETED -> {
-                return NavRoutes.HOME_GRAPH
+                return NavRoutes.Home.GRAPH
             }
         }
     }
