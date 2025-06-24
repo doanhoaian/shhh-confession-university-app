@@ -124,9 +124,7 @@ class CreatePassViewModel @AssistedInject constructor(
                         authViewModel.signUpWithEmail(email, password)
 
                         val endState = authViewModel.authState.first { state ->
-                            state is ResultLogin.Idle ||
-                                    (state is ResultLogin.Loading && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
-                                    (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
+                            (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
                                     (state is ResultLogin.Error && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL)
                         }
                         if (endState is ResultLogin.Success) {
