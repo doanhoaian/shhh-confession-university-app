@@ -5,7 +5,9 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import vn.dihaver.tech.shhh.confession.core.domain.auth.AuthRepository
+import vn.dihaver.tech.shhh.confession.core.domain.home.repository.FeedRepository
 import vn.dihaver.tech.shhh.confession.feature.auth.data.repository.AuthRepositoryImpl
+import vn.dihaver.tech.shhh.confession.feature.home.data.repository.FeedRepositoryImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -16,9 +18,8 @@ abstract class RepositoryModule {
         impl: AuthRepositoryImpl
     ): AuthRepository
 
-    // Sau này thêm các repository khác:
-    // @Binds
-    // abstract fun bindPostRepository(
-    //     impl: PostRepositoryImpl
-    // ): PostRepository
+    @Binds
+    abstract fun bindFeedRepository(
+        impl: FeedRepositoryImpl
+    ): FeedRepository
 }

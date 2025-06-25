@@ -7,7 +7,9 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import vn.dihaver.tech.shhh.confession.BuildConfig
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.AuthService
+import vn.dihaver.tech.shhh.confession.feature.home.data.remote.FeedService
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -16,7 +18,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     @Provides
-    fun provideBaseUrl(): String = "http://192.168.100.19:3000/api/"
+    fun provideBaseUrl(): String = BuildConfig.BASE_URL
 
     @Provides
     @Singleton
@@ -45,5 +47,11 @@ object NetworkModule {
     @Singleton
     fun provideAuthApiService(retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFeedApiService(retrofit: Retrofit): FeedService {
+        return retrofit.create(FeedService::class.java)
     }
 }

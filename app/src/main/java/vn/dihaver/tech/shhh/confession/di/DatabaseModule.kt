@@ -10,6 +10,10 @@ import dagger.hilt.components.SingletonComponent
 import vn.dihaver.tech.shhh.confession.core.data.local.database.AppDatabase
 import vn.dihaver.tech.shhh.confession.feature.auth.data.local.AliasDao
 import vn.dihaver.tech.shhh.confession.feature.auth.data.local.SchoolDao
+import vn.dihaver.tech.shhh.confession.feature.home.data.local.dao.FeedPageMetadataDao
+import vn.dihaver.tech.shhh.confession.feature.home.data.local.dao.FeedRemoteKeyDao
+import vn.dihaver.tech.shhh.confession.feature.home.data.local.dao.PostDao
+import vn.dihaver.tech.shhh.confession.feature.home.data.local.dao.InteractionDao
 import javax.inject.Singleton
 
 @Module
@@ -34,5 +38,25 @@ object DatabaseModule {
     @Provides
     fun provideSchoolDao(database: AppDatabase): SchoolDao {
         return database.schoolDao()
+    }
+
+    @Provides
+    fun providePostDao(appDatabase: AppDatabase): PostDao {
+        return appDatabase.postDao()
+    }
+
+    @Provides
+    fun provideInteractionDao(appDatabase: AppDatabase): InteractionDao {
+        return appDatabase.interactionDao()
+    }
+
+    @Provides
+    fun provideFeedRemoteKeyDao(appDatabase: AppDatabase): FeedRemoteKeyDao {
+        return appDatabase.feedRemoteKeyDao()
+    }
+
+    @Provides
+    fun provideFeedPageMetadataDao(appDatabase: AppDatabase): FeedPageMetadataDao {
+        return appDatabase.feedPageMetadataDao()
     }
 }

@@ -6,12 +6,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,39 +24,35 @@ import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 @Composable
 private fun ShhhTopAppBarPreview() {
     ShhhTheme {
-        ShhhTopAppBar(showBack = true)
+        ShhhTopAppBar(showNavigation = true)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShhhTopAppBar(
-    title: String? = null,
-    showBack: Boolean = false,
+    title: @Composable () -> Unit = {},
+    showNavigation: Boolean = false,
+    navigationIcon: Painter = painterResource(R.drawable.svg_arrow_back),
     actions: (@Composable RowScope.() -> Unit)? = null,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.surface,
+        scrolledContainerColor = MaterialTheme.colorScheme.surface,
         navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         actionIconContentColor = MaterialTheme.colorScheme.onSurface
     ),
-    onBackClick: () -> Unit = {}
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    onNavigationClick: () -> Unit = {}
 ) {
     TopAppBar(
-        title = {
-            title?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-        },
+        title = { title() },
         navigationIcon = {
-            if (showBack) {
-                IconButton(onClick = onBackClick) {
+            if (showNavigation) {
+                IconButton(onClick = onNavigationClick) {
                     Icon(
-                        painter = painterResource(R.drawable.svg_arrow_back),
+                        painter = navigationIcon,
                         contentDescription = stringResource(R.string.action_back)
                     )
                 }
@@ -65,6 +62,7 @@ fun ShhhTopAppBar(
             actions?.invoke(this)
         },
         modifier = modifier,
-        colors = colors
+        colors = colors,
+        scrollBehavior = scrollBehavior
     )
 }

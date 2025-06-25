@@ -190,14 +190,13 @@ fun SelectSchoolScreen(
                     when (fetchError) {
                         SelectSchoolViewModel.FetchErrorType.INTERNET -> {
                             ShhhErrorInternet(
-                                onRetry = { viewModel.retryFetch(context) },
-                                modifier = Modifier.fillMaxSize()
+                                onRetry = { viewModel.retryFetch(context) }
                             )
                         }
 
                         SelectSchoolViewModel.FetchErrorType.UNKNOWN -> {
                             ShhhErrorUnknown(
-                                modifier = Modifier.fillMaxSize()
+                                onRetry = { viewModel.retryFetch(context) }
                             )
                         }
                     }

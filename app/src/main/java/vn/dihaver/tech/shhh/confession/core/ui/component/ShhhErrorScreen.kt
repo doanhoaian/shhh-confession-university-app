@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,7 +39,7 @@ fun ShhhErrorInternet(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(ShhhDimens.PaddingExtraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -54,14 +52,14 @@ fun ShhhErrorInternet(
         )
         Spacer(Modifier.height(ShhhDimens.SpacerLarge))
         Text(
-            text = "Không có kết nối Internet. Vui lòng nhấn thử lại",
+            text = "Không có kết nối Internet",
             style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(ShhhDimens.SpacerMedium))
         Text(
-            text = "Kiểm tra kết nối với Internet và thử lại",
+            text = "Kiểm tra kết nối của bạn và thử lại",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -76,11 +74,12 @@ fun ShhhErrorInternet(
 
 @Composable
 fun ShhhErrorUnknown(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onRetry: () -> Unit
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(ShhhDimens.PaddingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -100,11 +99,15 @@ fun ShhhErrorUnknown(
         )
         Spacer(Modifier.height(ShhhDimens.SpacerMedium))
         Text(
-            text = "Nguyên nhân có thể do lỗi kỹ thuật mà chúng tôi đang cố gắng khắc phục",
+            text = "Có sự cố ngoài ý muốn đã xảy ra. Vui lòng thử lại",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(ShhhDimens.SpacerLarge))
+        ShhhTextButton(
+            label = "Thử lại",
+            onClick = onRetry
+        )
     }
 }
