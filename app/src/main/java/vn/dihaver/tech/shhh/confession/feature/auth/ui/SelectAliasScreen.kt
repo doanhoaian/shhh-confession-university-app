@@ -168,14 +168,13 @@ fun SelectAliasScreen(
                     when (fetchError) {
                         SelectAliasViewModel.FetchErrorType.INTERNET -> {
                             ShhhErrorInternet(
-                                onRetry = { viewModel.retryFetch(context) },
-                                modifier = Modifier.fillMaxSize()
+                                onRetry = { viewModel.retryFetch(context) }
                             )
                         }
 
                         SelectAliasViewModel.FetchErrorType.UNKNOWN -> {
                             ShhhErrorUnknown(
-                                modifier = Modifier.fillMaxSize()
+                                onRetry = { viewModel.retryFetch(context) }
                             )
                         }
                     }

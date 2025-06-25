@@ -26,6 +26,7 @@ android {
         // BuildConfig
         buildConfigField("int", "VERSION_CODE", versionCode.toString())
         buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.100.19:3000/api/\"")
     }
 
     buildTypes {
@@ -60,6 +61,7 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.ui.core)
     implementation(libs.ui.graphics)
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.ui.tooling)
     implementation(libs.ui.tooling.preview)
     implementation(libs.ui.text.google.fonts)
@@ -106,10 +108,16 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.room.paging)
     ksp(libs.room.compiler)
 
     // WorkManager
     implementation(libs.work.runtime)
+
+    // Paging
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
+
 
     // Jetbrains Kotlinx
     implementation(libs.serialization.json)
@@ -118,7 +126,11 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.ohteepee)
     implementation(libs.coil.svg)
+    implementation(libs.coil.gif)
     implementation(libs.compose.shimmer)
+    implementation(libs.haze.jetpack.compose)
+    implementation(libs.threetenbp)
+    implementation(libs.compose.collapsing.top.bar)
 
     // Testing
     testImplementation(libs.junit)

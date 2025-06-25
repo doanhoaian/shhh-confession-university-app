@@ -7,7 +7,7 @@ import vn.dihaver.tech.shhh.confession.feature.home.ui.HomeScreen
 import vn.dihaver.tech.shhh.confession.navigation.NavRoutes
 
 fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
-    composable(NavRoutes.HOME_GRAPH) {
-        HomeScreen()
+    composable(NavRoutes.Home.GRAPH) {
+        HomeScreen(onCreate = { navController.navigate(NavRoutes.Post.CREATE) })
     }
 }
