@@ -101,7 +101,7 @@ fun HomeScreen(
     onCreate: () -> Unit
 ) {
     val lazyFeedItems = viewModel.feedPagingFlow.collectAsLazyPagingItems()
-    val selectedTopicValue = viewModel.selectedTopic.collectAsState().value
+    val selectedTopicValue = viewModel.selectedTopicFake.collectAsState().value
     val userSession = viewModel.userSession.collectAsState().value
 
     val topics = remember {

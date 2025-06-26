@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.dihaver.tech.shhh.confession.R
+import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhDialog
+import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhLoadingDialog
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTextField
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTopAppBar
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
@@ -48,6 +50,8 @@ fun CreatePostScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(key1 = viewModel.navEvent) {
         viewModel.navEvent.collect { event ->
@@ -56,6 +60,22 @@ fun CreatePostScreen(
                     onBack()
                 }
             }
+        }
+    }
+
+    if (isLoading) {
+        ShhhLoadingDialog(visible = true, message = "Đang đăng bài...")
+    }
+
+    errorMessage?.let {
+        ShhhDialog(
+            onDismiss = { viewModel.dismissErrorDialog() },
+            confirmText = "OK",
+            onConfirm = { viewModel.dismissErrorDialog() }
+        ) {
+            Text("Lỗi", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(it)
         }
     }
 

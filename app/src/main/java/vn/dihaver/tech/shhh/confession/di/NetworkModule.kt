@@ -10,6 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import vn.dihaver.tech.shhh.confession.BuildConfig
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.AuthService
 import vn.dihaver.tech.shhh.confession.feature.home.data.remote.FeedService
+import vn.dihaver.tech.shhh.confession.feature.post.data.remote.PostService
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -53,5 +54,11 @@ object NetworkModule {
     @Singleton
     fun provideFeedApiService(retrofit: Retrofit): FeedService {
         return retrofit.create(FeedService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePostApiService(retrofit: Retrofit): PostService {
+        return retrofit.create(PostService::class.java)
     }
 }

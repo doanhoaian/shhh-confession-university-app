@@ -26,7 +26,7 @@ android {
         // BuildConfig
         buildConfigField("int", "VERSION_CODE", versionCode.toString())
         buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
-        buildConfigField("String", "BASE_URL", "\"http://192.168.100.19:3000/api/\"")
+        buildConfigField("String", "BASE_URL", "\"https://stunning-essence-production.up.railway.app/api/\"")
     }
 
     buildTypes {

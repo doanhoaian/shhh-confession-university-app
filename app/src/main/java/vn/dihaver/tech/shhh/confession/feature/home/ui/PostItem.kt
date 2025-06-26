@@ -1,5 +1,7 @@
 package vn.dihaver.tech.shhh.confession.feature.home.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,8 +32,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +53,7 @@ import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 import vn.dihaver.tech.shhh.confession.core.ui.util.ShhhThemeExtended
 import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.formatCountCompact
 import vn.dihaver.tech.shhh.confession.feature.home.ui.model.PostUiModel
+import androidx.core.net.toUri
 
 @Preview(showBackground = true)
 @Composable
@@ -198,12 +206,50 @@ fun PostItem(
                 .fillMaxWidth()
                 .padding(15.dp, 10.dp)
         ) {
-            Text(
-                item.content,
+            val annotatedText = remember(item.content) {
+                buildAnnotatedString {
+                    val regex = "(https?://[\\w./?=&%-]+)".toRegex()
+                    var lastIndex = 0
+
+                    for (match in regex.findAll(item.content)) {
+                        val start = match.range.first
+                        val end = match.range.last + 1
+
+                        append(item.content.substring(lastIndex, start))
+
+                        // Add link style
+                        pushStringAnnotation(tag = "URL", annotation = match.value)
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color(0xFF1E88E5),
+                                textDecoration = TextDecoration.Underline,
+                                fontWeight = FontWeight.W600
+                            )
+                        ) {
+                            append(match.value)
+                        }
+                        pop()
+                        lastIndex = end
+                    }
+
+                    if (lastIndex < item.content.length) {
+                        append(item.content.substring(lastIndex))
+                    }
+                }
+            }
+
+            ClickableText(
+                text = annotatedText,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.W600
-                )
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(tag = "URL", start = offset, end = offset)
+                        .firstOrNull()?.let { annotation ->
+                            val intent = Intent(Intent.ACTION_VIEW, annotation.item.toUri())
+                            context.startActivity(intent)
+                        }
+                }
             )
         }
 

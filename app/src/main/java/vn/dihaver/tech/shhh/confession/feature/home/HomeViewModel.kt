@@ -36,6 +36,9 @@ class HomeViewModel @Inject constructor(
     private val _selectedTopic = MutableStateFlow<String?>("all")
     val selectedTopic = _selectedTopic.asStateFlow()
 
+    private val _selectedTopicFake = MutableStateFlow<String?>("all")
+    val selectedTopicFake = _selectedTopic.asStateFlow()
+
     private val _userSession = MutableStateFlow<UserSession?>(null)
     val userSession: StateFlow<UserSession?> = _userSession.asStateFlow()
 
@@ -94,8 +97,8 @@ class HomeViewModel @Inject constructor(
      * @param topicValue Giá trị của danh mục đã được chọn.
      */
     fun onCategorySelected(topicValue: String) {
-        if (_selectedTopic.value != topicValue) {
-            _selectedTopic.value = topicValue
+        if (_selectedTopicFake.value != topicValue) {
+            _selectedTopicFake.value = topicValue
         }
     }
 
