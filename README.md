@@ -1,110 +1,73 @@
-<!--suppress ALL -->
 <p align="center">
   <img src="app/src/main/ic_launcher-rounded.png" alt="Shhh logo" width="120" style="border-radius: 50px;"/>
 </p>
 
-<h1 align="center">Shhh – Ứng dụng Confession ẩn danh cho sinh viên</h1>
+<h1 align="center">C.A.M.P.U.S – Cộng Đồng Sinh Viên</h1>
 
 <p align="center">
-Đồ án học phần Lập trình thiết bị di động • University of Transport Ho Chi Minh City • Năm học 2024–2025  
-</p>
-
-<p align="center">
-  <a href="https://byvn.net/ikSi"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/vi_badge_web_generic.png" alt="Tải trên Google Play" height="70"/></a>
+  Một dự án mã nguồn mở trong khuôn khổ học phần Lập trình Thiết bị Di động tại University of Transport Ho Chi Minh City.
 </p>
 
 ---
 
-## 📌 Mục tiêu dự án
+## Giới thiệu
 
-**Shhh - Câu Chuyện Trường Tôi** là ứng dụng mạng xã hội nhỏ dành cho sinh viên, nơi mọi người có
-thể:
+**C.A.M.P.U.S – Cộng Đồng Sinh Viên** là một không gian an toàn và ẩn danh dành cho sinh viên, nơi bạn có thể tự do chia sẻ những suy nghĩ, tâm sự, và những câu chuyện thầm kín mà không lo bị phán xét.
+### Các tính năng chính:
 
-- Đăng các bài viết **ẩn danh**
-- Xem bài của trường/khoa khác
-- **Reaction** (👍, ❤️, 😆...) các bài viết
-- Bình luận bài viết
-- Xem thống kê bài viết phổ biến
-
-Dự án được thực hiện nhằm:
-
-- Vận dụng kiến thức lập trình mobile (Android – Kotlin)
-- Học cách tổ chức, phân công và làm việc nhóm theo mô hình thật
-- Trải nghiệm quy trình Dev thực tế (GitHub Flow, CI/CD, release...)
+* **Đăng bài ẩn danh**: Chia sẻ câu chuyện của bạn với một trong nhiều danh tính được cung cấp sẵn.
+* **Tương tác đa dạng**: Thể hiện cảm xúc với các bài viết qua hệ thống reaction và bình luận.
+* **Tùy chỉnh linh hoạt**: Lựa chọn trường và danh tính ẩn danh để cá nhân hóa trải nghiệm.
+* **Giao diện hiện đại**: Xây dựng hoàn toàn bằng Jetpack Compose, mang lại trải nghiệm mượt mà và đẹp mắt.
 
 ---
 
-## ⚙️ Công nghệ sử dụng
+## Công nghệ & Kiến trúc
 
-| Thành phần | Công nghệ                                                                |
-|------------|--------------------------------------------------------------------------|
-| Frontend   | Android (Kotlin, Jetpack Compose)                                        |
-| Backend    | Firebase (Storage /Auth), API (Node.js + Express), Database SQL (My SQL) |
-| Design     | Figma (Xem tại `/docs`)                                                  |
-| CI/CD      | GitHub Actions                                                           |
+Dự án được xây dựng dựa trên các công nghệ và kiến trúc hiện đại, theo mô hình MVVM (Model-View-ViewModel).
 
----
-
-## 📂 Cấu trúc repo
-
-```
-shhh-confession-university-app/
-├── app/                 # Mã nguồn chính Android
-├── doc/                 # Tài liệu thiết kế, đặc tả, luồng người dùng
-├── CONTRIBUTING.md      # Hướng dẫn đóng góp
-└── README.md            # Tệp hiện tại
-```
+| Thành phần | Công nghệ / Thư viện |
+| :--- | :--- |
+| **Giao diện người dùng (UI)** | Jetpack Compose, Material 3, Coil (hiển thị ảnh), Haze (hiệu ứng mờ) |
+| **Kiến trúc** | MVVM, Clean Architecture (Use Cases, Repositories) |
+| **Bất đồng bộ** | Kotlin Coroutines, Flow |
+| **Dependency Injection** | Hilt (Dagger) |
+| **Navigation** | Jetpack Navigation Compose |
+| **Dữ liệu từ xa (Remote)** | Retrofit, OkHttp, Gson |
+| **Dữ liệu cục bộ (Local)** | Room (Database), Jetpack DataStore (quản lý session), Paging 3 (phân trang) |
+| **Xác thực** | Firebase Authentication (Email, Google Sign-In) |
 
 ---
 
-## 📦 Cài đặt & chạy thử
+## Cài đặt và Chạy thử
 
-```bash
-git clone https://github.com/doanhoaian/shhh-confession-university-app.git
-cd shhh-confession-university-app
-# Mở bằng Android Studio và build
-```
-
----
-
-## 🧑‍💻 Nhóm phát triển
-
-| Tên               | Vai trò     |
-|-------------------|-------------|
-| Đoàn Hoài Ân      | Trưởng nhóm |
-| Nguyễn Thành Khoa | Thành viên  |
-| Nguyễn Văn Nhật   | Thành viên  |
-
-- Mỗi thành viên làm việc theo nhánh `feature/<ten-nhanh>` và tạo PR
-- Merge có kiểm duyệt bởi trưởng nhóm
-
-> 📌 Xem thêm phân công nhiệm vụ trong file [`/docs/Task.md`](./docs/Task.md)
+1.  **Clone repository:**
+    ```bash
+    git clone [https://github.com/doanhoaian/shhh-confession-university-app.git](https://github.com/doanhoaian/shhh-confession-university-app.git)
+    ```
+2.  Mở dự án bằng **Android Studio**.
+3.  Cập nhật địa chỉ `BASE_URL` trong tệp `app/build.gradle.kts` để trỏ đến máy chủ backend của bạn.
+    ```kotlin
+    buildConfigField("String", "BASE_URL", "\"http://YOUR_IP_ADDRESS:3000/api/\"")
+    ```
+4.  Build và chạy ứng dụng.
 
 ---
 
-## 📄 Tài liệu tham khảo
+## Đóng góp
 
-- Thiết kế luồng người dùng: [`/docs/Flow.pdf`](docs/Flow.pdf)
-- Đặc tả chức năng: [`/docs/Spec.md`](docs/Spec.md)
-
----
-
-## 📤 Dự kiến phát hành
-
-Ứng dụng sẽ được phát hành trên **Google Play** sau khi hoàn thiện:
-
-<p align="left">
-  <a href="https://byvn.net/ikSi"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/vi_badge_web_generic.png" alt="Tải trên Google Play" height="60"/></a>
-</p>
+Chúng tôi hoan nghênh mọi sự đóng góp từ cộng đồng! Nếu bạn muốn đóng góp, vui lòng tham khảo tệp [**CONTRIBUTING.md**](./CONTRIBUTING.md) để biết thêm chi tiết về quy trình tạo Pull Request và các quy tắc làm việc.
 
 ---
 
-## 💬 Liên hệ
+## Nhóm phát triển
 
-Nếu bạn có câu hỏi, góp ý hoặc báo lỗi, vui lòng mở issue hoặc liên hệ qua email:
-
-✉️ an.doan.dev@gmail.com
+| Tên | Vai trò |
+| :--- | :--- |
+| Đoàn Hoài Ân | Trưởng nhóm |
+| Nguyễn Thành Khoa | Thành viên |
+| Nguyễn Văn Nhật | Thành viên |
 
 ---
 
-> © 2025 • Group of students from University of Transport Ho Chi Minh City – Course Lập trình thiết bị di động
+> © 2025 • Group of students from University of Transport Ho Chi Minh City – Course Lập trình thiết bị di động.
