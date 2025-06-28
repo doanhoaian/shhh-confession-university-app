@@ -1,6 +1,5 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.ui
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

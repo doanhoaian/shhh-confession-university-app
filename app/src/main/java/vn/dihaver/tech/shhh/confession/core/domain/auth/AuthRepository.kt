@@ -21,4 +21,5 @@ interface AuthRepository {
     suspend fun resetPassword(request: ResetPasswordRequest)
     suspend fun updateAlias(request: UpdateAliasRequest): Int
     suspend fun updateSchool(request: UpdateSchoolRequest)
+    suspend fun logoutAuth(): Boolean
 }

@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
 import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.LogoutAuthUseCase
 import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
 import vn.dihaver.tech.shhh.confession.core.domain.home.usecase.GetFeedUseCase
 import vn.dihaver.tech.shhh.confession.core.util.distinctUntilChangedBy
@@ -30,7 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getFeedUseCase: GetFeedUseCase,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val logoutAuthUseCase: LogoutAuthUseCase
 ) : ViewModel() {
 
     private val _selectedTopic = MutableStateFlow<String?>("all")
@@ -100,6 +102,17 @@ class HomeViewModel @Inject constructor(
         if (_selectedTopicFake.value != topicValue) {
             _selectedTopicFake.value = topicValue
         }
+    }
+
+    fun onLogout(): Boolean {
+        try {
+            viewModelScope.launch {
+                logoutAuthUseCase.invoke()
+            }
+        } catch (e: Exception) {
+            return false
+        }
+        return true
     }
 
     private fun getDynamicHint(): String {

@@ -1,5 +1,6 @@
 package vn.dihaver.tech.shhh.confession.feature.home.ui
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,10 +73,12 @@ import com.flaringapp.compose.topbar.scaffold.rememberCollapsingTopBarScaffoldSt
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import kotlinx.coroutines.launch
+import vn.dihaver.tech.shhh.confession.MainActivity
 import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhErrorInternet
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhErrorUnknown
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTopAppBar
+import vn.dihaver.tech.shhh.confession.core.ui.component.fadeClick
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 import vn.dihaver.tech.shhh.confession.feature.home.HomeViewModel
 import java.io.IOException
@@ -134,6 +137,17 @@ fun HomeScreen(
             ) {
                 Text("Menu 1")
                 Text("Menu 2")
+                Text(
+                    "Logout",
+                    modifier = Modifier
+                        .fadeClick {
+                            viewModel.onLogout()
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            context.startActivity(intent)
+                        }
+                        .padding(15.dp, 10.dp)
+                )
             }
         },
         gesturesEnabled = true,

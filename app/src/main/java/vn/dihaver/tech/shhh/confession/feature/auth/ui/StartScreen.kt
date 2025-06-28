@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,20 +26,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhButton
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhDialog
-import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhDialogPreview
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhLoadingDialog
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhOutlinedButton
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhDimens
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 import vn.dihaver.tech.shhh.confession.feature.auth.model.TypeLogin
 import vn.dihaver.tech.shhh.confession.feature.auth.viewmodel.StartViewModel
-
-private const val TAG = "AAA-StartScreen"
 
 @Preview(
     showSystemUi = true, showBackground = true,

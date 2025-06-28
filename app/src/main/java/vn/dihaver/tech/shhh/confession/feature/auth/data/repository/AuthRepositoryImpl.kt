@@ -1,5 +1,6 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.data.repository
 
+import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
 import vn.dihaver.tech.shhh.confession.core.data.local.firebase.AuthManager
 import vn.dihaver.tech.shhh.confession.core.data.repository.BaseRepository
 import vn.dihaver.tech.shhh.confession.core.domain.auth.AuthRepository
@@ -28,7 +29,8 @@ class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
     private val aliasDao: AliasDao,
     private val schoolDao: SchoolDao,
-    private val authManager: AuthManager
+    private val authManager: AuthManager,
+    private val sessionManager: SessionManager
 ) : AuthRepository, BaseRepository() {
 
     override suspend fun checkEmail(email: String): CheckEmail {
@@ -127,6 +129,16 @@ class AuthRepositoryImpl @Inject constructor(
         safeApiCallNullable(successCodes = setOf(200)) {
             authService.updateSchool(token, newRequest)
         }
+    }
+
+    override suspend fun logoutAuth(): Boolean {
+        try {
+            authManager.logout()
+            sessionManager.clearSession()
+        } catch (e: Exception) {
+            return false
+        }
+        return true
     }
 
 }

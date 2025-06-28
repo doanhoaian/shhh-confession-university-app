@@ -1,5 +1,6 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.ui
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -28,35 +31,51 @@ import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTextField
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTopAppBar
 import vn.dihaver.tech.shhh.confession.core.ui.component.fadeClick
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhDimens
-import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
+import vn.dihaver.tech.shhh.confession.feature.auth.ui.state.InputPassUiState
 import vn.dihaver.tech.shhh.confession.feature.auth.viewmodel.InputPassViewModel
 
-@Preview
-@Composable
-private fun InputPassScreenPreview() {
-    ShhhTheme {
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputPassScreen(
     viewModel: InputPassViewModel,
     onNext: () -> Unit,
     onBack: () -> Unit
 ) {
-    val email = viewModel.email
-    val password = viewModel.password
-    val isLoading = viewModel.isLoading
-    val isError = viewModel.isError
-    val errorMessage = viewModel.errorMessage
-    val isValidPassword = viewModel.isValidPassword
+    val uiState = viewModel.uiState.collectAsState().value
 
-    val keyboardController = LocalSoftwareKeyboardController.current
+    LaunchedEffect(uiState.navigateTo) {
+        if (uiState.navigateTo) {
+            onNext()
+            viewModel.onNavigationHandled()
+        }
+    }
 
     BackHandler(enabled = true, onBack = onBack)
 
-    ShhhLoadingDialog(visible = isLoading, showBackground = true, message = "Đang thực hiện...")
+    ShhhLoadingDialog(
+        visible = uiState.isLoading,
+        showBackground = true,
+        message = "Đang thực hiện..."
+    )
+
+    InputPassContent(
+        uiState = uiState,
+        onPasswordChange = viewModel::onPasswordChange,
+        onSignIn = viewModel::onSignIn,
+        onForgetPassword = viewModel::onForgetPassword,
+        onBack = onBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun InputPassContent(
+    uiState: InputPassUiState,
+    onPasswordChange: (newPass: String) -> Unit,
+    onSignIn: () -> Unit,
+    onForgetPassword: () -> Unit,
+    onBack: () -> Unit
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
@@ -77,19 +96,19 @@ fun InputPassScreen(
             )
             Spacer(Modifier.height(ShhhDimens.SpacerSmall))
             Text(
-                text = "Nhập mật khẩu để đăng nhập vào tài khoản $email",
+                text = "Nhập mật khẩu để đăng nhập vào tài khoản ${uiState.email}",
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.height(ShhhDimens.SpacerLarge))
             ShhhTextField(
-                value = password,
-                onValueChange = { viewModel.onPasswordChange(it) },
+                value = uiState.password,
+                onValueChange = { onPasswordChange(it) },
                 hint = "Mật khẩu",
-                isError = isError,
-                enabled = !isLoading,
-                errorMessage = errorMessage,
+                isError = uiState.error != null,
+                enabled = !uiState.isLoading,
+                errorMessage = uiState.error,
                 isPassword = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -98,7 +117,7 @@ fun InputPassScreen(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         keyboardController?.hide()
-                        viewModel.signIn(onNext)
+                        onSignIn()
                     }
                 )
             )
@@ -110,7 +129,7 @@ fun InputPassScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .fadeClick {
-                            viewModel.onForgetPassword(onNext)
+                            onForgetPassword()
                         }
                         .padding(ShhhDimens.PaddingSmall, ShhhDimens.PaddingExtraSmall)
                 )
@@ -118,11 +137,41 @@ fun InputPassScreen(
             Spacer(Modifier.height(ShhhDimens.SpacerLarge))
             ShhhButton(
                 label = stringResource(R.string.action_continue),
-                enabled = isValidPassword,
-                isLoading = isLoading
+                enabled = uiState.isValidPassword,
+                isLoading = uiState.isLoading
             ) {
-                viewModel.signIn(onNext)
+                onSignIn()
             }
         }
     }
 }
+
+@Preview(showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun InputPassContentPreview() {
+    InputPassContent(
+        uiState = InputPassUiState(email = "example@example.com"),
+        onPasswordChange = {},
+        onSignIn = {},
+        onForgetPassword = {},
+        onBack = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun InputPassContentLoadingPreview() {
+    InputPassContent(
+        uiState = InputPassUiState(
+            email = "example@example.com",
+            isLoading = true
+        ),
+        onPasswordChange = {},
+        onSignIn = {},
+        onForgetPassword = {},
+        onBack = {}
+    )
+}
+

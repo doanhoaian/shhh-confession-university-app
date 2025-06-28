@@ -20,7 +20,6 @@ import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.core.util.SystemUtils.isNetworkAvailable
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.UpdateSchoolRequest
-import vn.dihaver.tech.shhh.confession.feature.auth.viewmodel.SelectAliasViewModel.FetchErrorType
 import java.io.IOException
 
 @HiltViewModel(assistedFactory = SelectSchoolViewModel.Factory::class)
