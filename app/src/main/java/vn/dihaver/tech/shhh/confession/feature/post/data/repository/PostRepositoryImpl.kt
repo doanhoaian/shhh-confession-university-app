@@ -14,6 +14,7 @@ import vn.dihaver.tech.shhh.confession.core.util.UnauthorizedException
 import vn.dihaver.tech.shhh.confession.feature.post.data.remote.PostService
 import vn.dihaver.tech.shhh.confession.feature.post.data.remote.dto.CreatePostDto
 import vn.dihaver.tech.shhh.confession.feature.post.data.remote.dto.CreatePostRequest
+import vn.dihaver.tech.shhh.confession.feature.post.data.remote.dto.LikePostRequest
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -64,6 +65,10 @@ class PostRepositoryImpl @Inject constructor(
                 images = imageParts.ifEmpty { null } // Gửi null nếu không có ảnh
             )
         }
+    }
+
+    override suspend fun likePost(request: LikePostRequest) {
+
     }
 
     // Hàm tiện ích để lấy tên file từ Uri

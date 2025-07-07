@@ -20,8 +20,8 @@ import vn.dihaver.tech.shhh.confession.core.domain.post.usecase.CreatePostUseCas
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.FeedRemoteKeyEntity
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.PostEntity
 import vn.dihaver.tech.shhh.confession.feature.post.data.remote.dto.CreatePostRequest
-import vn.dihaver.tech.shhh.confession.feature.post.ui.model.CreatePostNavEvent
-import vn.dihaver.tech.shhh.confession.feature.post.ui.model.CreatePostUiState
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.CreatePostNavEvent
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.CreatePostUiState
 import java.io.IOException
 import javax.inject.Inject
 

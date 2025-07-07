@@ -1,22 +1,18 @@
 package vn.dihaver.tech.shhh.confession.feature.home.data.mapper
 
-import android.content.Context
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.Author
+import vn.dihaver.tech.shhh.confession.core.domain.post.model.Author
 import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.Post
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.PostStats
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.PostType
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.UserInteraction
-import vn.dihaver.tech.shhh.confession.core.util.DateTimeUtils
+import vn.dihaver.tech.shhh.confession.core.domain.post.model.Post
+import vn.dihaver.tech.shhh.confession.core.domain.post.model.PostStats
+import vn.dihaver.tech.shhh.confession.core.domain.post.model.PostType
+import vn.dihaver.tech.shhh.confession.core.domain.post.model.UserInteraction
 import vn.dihaver.tech.shhh.confession.core.util.DateTimeUtils.isoToEpochMillis
 import vn.dihaver.tech.shhh.confession.core.util.DateTimeUtils.toRelativeTime
-import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.formatCountCompact
-import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.formatCountDetail
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.InteractionEntity
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.PostEntity
 import vn.dihaver.tech.shhh.confession.feature.home.data.remote.dto.InteractionStatusDto
 import vn.dihaver.tech.shhh.confession.feature.home.data.remote.dto.PostDto
-import vn.dihaver.tech.shhh.confession.feature.home.ui.model.PostUiModel
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.PostUiModel
 
 // Dto > Entity
 fun PostDto.toEntity(): PostEntity = PostEntity(

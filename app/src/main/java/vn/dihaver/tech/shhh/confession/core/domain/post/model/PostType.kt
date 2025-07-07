@@ -1,4 +1,4 @@
-package vn.dihaver.tech.shhh.confession.core.domain.home.model
+package vn.dihaver.tech.shhh.confession.core.domain.post.model
 
 import com.google.gson.annotations.SerializedName
 

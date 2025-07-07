@@ -1,7 +1,6 @@
-package vn.dihaver.tech.shhh.confession.feature.home.ui
+package vn.dihaver.tech.shhh.confession.feature.post.ui
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -52,7 +52,7 @@ import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhDimens
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 import vn.dihaver.tech.shhh.confession.core.ui.util.ShhhThemeExtended
 import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.formatCountCompact
-import vn.dihaver.tech.shhh.confession.feature.home.ui.model.PostUiModel
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.PostUiModel
 import androidx.core.net.toUri
 
 @Preview(showBackground = true)
@@ -149,6 +149,7 @@ fun PostItem(
     Column(
         Modifier
             .fillMaxWidth()
+            .shadow(elevation = 1.dp)
             .background(color = MaterialTheme.colorScheme.surface)
     ) {
         Row(
@@ -164,7 +165,7 @@ fun PostItem(
                     .build(),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(35.dp)
                     .clip(CircleShape)
             )
             Spacer(Modifier.width(10.dp))
@@ -173,6 +174,7 @@ fun PostItem(
                     item.authorName,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 13.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -204,7 +206,7 @@ fun PostItem(
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(15.dp, 10.dp)
+                .padding(horizontal = 15.dp)
         ) {
             val annotatedText = remember(item.content) {
                 buildAnnotatedString {
@@ -223,7 +225,7 @@ fun PostItem(
                             style = SpanStyle(
                                 color = Color(0xFF1E88E5),
                                 textDecoration = TextDecoration.Underline,
-                                fontWeight = FontWeight.W600
+                                fontWeight = FontWeight.W500
                             )
                         ) {
                             append(match.value)
@@ -241,7 +243,9 @@ fun PostItem(
             ClickableText(
                 text = annotatedText,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500
                 ),
                 onClick = { offset ->
                     annotatedText.getStringAnnotations(tag = "URL", start = offset, end = offset)
@@ -263,7 +267,7 @@ fun PostItem(
             }
         }
 
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(15.dp))
 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 15.dp),
@@ -334,9 +338,9 @@ fun PostItemSkeleton() {
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(35.dp)
                     .clip(CircleShape)
-                    .background(Color.Gray)
+                    .background(MaterialTheme.colorScheme.outlineVariant)
             )
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f, true)) {
@@ -344,14 +348,14 @@ fun PostItemSkeleton() {
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .height(20.dp)
-                        .background(Color.Gray, shape = MaterialTheme.shapes.small)
+                        .background(MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.small)
                 )
                 Spacer(Modifier.height(5.dp))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.4f)
                         .height(16.dp)
-                        .background(Color.Gray, shape = MaterialTheme.shapes.small)
+                        .background(MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.small)
                 )
             }
         }

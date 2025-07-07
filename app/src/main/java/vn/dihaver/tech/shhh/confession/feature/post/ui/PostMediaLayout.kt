@@ -1,7 +1,8 @@
-package vn.dihaver.tech.shhh.confession.feature.home.ui
+package vn.dihaver.tech.shhh.confession.feature.post.ui
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -52,7 +54,7 @@ import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.ui.component.fadeClick
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 import vn.dihaver.tech.shhh.confession.core.util.ImageUtils
-import vn.dihaver.tech.shhh.confession.feature.home.ui.model.PostUiModel
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.PostUiModel
 import kotlin.math.roundToInt
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -288,8 +290,8 @@ fun PostMediaLayout(
             1 ->
                 SinglePostImage(
                     media = mediaItems[0],
-                    percentRadius = 6,
                     paddingHorizontal = paddingHorizontal,
+                    percentRadius = 3,
                     onClick = { onImageClick(0, mediaItems) },
                     onRemove = onRemoveItem?.let { { it(0) } }
                 )
@@ -297,6 +299,7 @@ fun PostMediaLayout(
             2 ->
                 SideBySideImageLayout(
                     mediaItems = mediaItems,
+                    percentRadius = 5,
                     onClick = { index -> onImageClick(index, mediaItems) },
                     onRemoveItem = onRemoveItem
                 )
@@ -304,6 +307,7 @@ fun PostMediaLayout(
             3 ->
                 FeaturedImageWithTwoSmallLayout(
                     mediaItems = mediaItems,
+                    percentRadius = 7,
                     onClick = { index -> onImageClick(index, mediaItems) },
                     onRemoveItem = onRemoveItem
                 )
@@ -311,6 +315,7 @@ fun PostMediaLayout(
             4 ->
                 SymmetricalImageGrid(
                     mediaItems = mediaItems,
+                    percentRadius = 5,
                     columns = 2,
                     onClick = { index -> onImageClick(index, mediaItems) },
                     onRemoveItem = onRemoveItem
@@ -319,6 +324,7 @@ fun PostMediaLayout(
             5 ->
                 AsymmetricalFiveImageLayout(
                     mediaItems = mediaItems,
+                    percentRadius = 7,
                     onClick = { index -> onImageClick(index, mediaItems) },
                     onRemoveItem = onRemoveItem
                 )
@@ -328,6 +334,7 @@ fun PostMediaLayout(
                     mediaItems = mediaItems,
                     columns = 3,
                     maxVisible = 6,
+                    percentRadius = 7,
                     onClick = { index -> onImageClick(index, mediaItems) },
                     onRemoveItem = onRemoveItem
                 )
@@ -340,42 +347,46 @@ fun PostMediaLayout(
 fun SinglePostImage(
     media: Any,
     paddingHorizontal: Dp = 15.dp,
-    maxHeight: Dp = 500.dp,
     percentRadius: Int = 10,
     onClick: () -> Unit,
     onRemove: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
     val density = LocalDensity.current
 
-    val maxWidth = LocalConfiguration.current.screenWidthDp.dp - (paddingHorizontal * 2)
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
+
+    val maxWidth = screenWidth - (paddingHorizontal * 2)
+    val maxHeight = screenHeight * (2f / 3f)
+
     val cornerShape = RoundedCornerShape(percent = percentRadius)
 
-    val calculatedHeight = if (media is String && "w=" in media && "h=" in media) {
-        val size = ImageUtils.parseImageSize(media)
-        val aspectRatio = size?.let {
-            it.first.toFloat() / it.second
-        } ?: 1f
+    val calculatedHeight =
+        if (media is String && "w=" in media && "h=" in media) {
+            val size = ImageUtils.parseImageSize(media)
+            val aspectRatio = size?.let { it.first.toFloat() / it.second }
+            aspectRatio?.let {
+                with(density) {
+                    val pxWidth = maxWidth.toPx()
+                    val pxHeight = pxWidth / it
+                    pxHeight.toDp().coerceAtMost(maxHeight)
+                }
+            }
+        } else null
 
-        remember(aspectRatio, maxWidth) {
-            val pxWidth = with(density) { maxWidth.toPx() }
-            val pxHeight = pxWidth / aspectRatio
-            val dpHeight = with(density) { pxHeight.toDp() }
-            dpHeight.coerceAtMost(maxHeight)
-        }
-    } else {
-        (maxWidth * 3f / 4f).coerceAtMost(maxHeight)
-    }
+    val finalHeight = calculatedHeight ?: maxWidth
 
     val imageContent = @Composable {
         Box(
             modifier = Modifier
                 .fadeClick { onClick() }
-                .fillMaxWidth()
-                .height(calculatedHeight)
+                .width(maxWidth)
+                .height(finalHeight)
                 .clip(cornerShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-
+                .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(context)
@@ -384,7 +395,7 @@ fun SinglePostImage(
                     .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -416,7 +427,8 @@ fun SideBySideImageLayout(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(cornerShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
                         .fadeClick { onClick(i) }
                 ) {
                     AsyncImage(
@@ -457,7 +469,7 @@ fun FeaturedImageWithTwoSmallLayout(
     onRemoveItem: ((Int) -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val cornerShapeMedium = RoundedCornerShape(percent = (percentRadius / 1.6).toInt())
+    val cornerShapeMedium = RoundedCornerShape(percent = percentRadius - 2)
     val cornerShape = RoundedCornerShape(percent = percentRadius)
 
     Row(
@@ -475,7 +487,8 @@ fun FeaturedImageWithTwoSmallLayout(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(cornerShapeMedium)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, cornerShapeMedium)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShapeMedium)
                     .fadeClick { onClick(0) }
             ) {
                 AsyncImage(
@@ -508,7 +521,8 @@ fun FeaturedImageWithTwoSmallLayout(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(cornerShape)
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
                             .fadeClick { onClick(index) }
                     ) {
                         AsyncImage(
@@ -565,7 +579,8 @@ fun SymmetricalImageGrid(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(cornerShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
                                 .fadeClick { onClick(itemIndex) }
                         ) {
                             AsyncImage(
@@ -610,6 +625,7 @@ fun AsymmetricalFiveImageLayout(
     onRemoveItem: ((Int) -> Unit)? = null
 ) {
     val context = LocalContext.current
+    val cornerShapeMedium = RoundedCornerShape(percent = percentRadius - 2)
     val cornerShape = RoundedCornerShape(percent = percentRadius)
 
     val createDeletableImage: @Composable (Int, Modifier) -> Unit = { index, modifier ->
@@ -617,8 +633,6 @@ fun AsymmetricalFiveImageLayout(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(cornerShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .fadeClick { onClick(index) }
             ) {
                 AsyncImage(
@@ -653,11 +667,17 @@ fun AsymmetricalFiveImageLayout(
                 0, Modifier
                     .weight(1f)
                     .aspectRatio(1f)
+                    .clip(cornerShapeMedium)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, cornerShapeMedium)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShapeMedium)
             )
             createDeletableImage(
                 1, Modifier
                     .weight(1f)
                     .aspectRatio(1f)
+                    .clip(cornerShapeMedium)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, cornerShapeMedium)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShapeMedium)
             )
         }
 
@@ -669,16 +689,25 @@ fun AsymmetricalFiveImageLayout(
                 2, Modifier
                     .weight(1f)
                     .aspectRatio(1f)
+                    .clip(cornerShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
             )
             createDeletableImage(
                 3, Modifier
                     .weight(1f)
                     .aspectRatio(1f)
+                    .clip(cornerShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
             )
             createDeletableImage(
                 4, Modifier
                     .weight(1f)
                     .aspectRatio(1f)
+                    .clip(cornerShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
             )
         }
     }
@@ -716,7 +745,8 @@ fun ImageGridWithOverflowIndicator(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(cornerShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .background(MaterialTheme.colorScheme.surfaceVariant, cornerShape)
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f), cornerShape)
                                 .fadeClick { onClick(itemIndex) },
                             contentAlignment = Alignment.Center
                         ) {

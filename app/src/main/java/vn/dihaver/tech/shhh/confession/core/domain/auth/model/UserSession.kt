@@ -17,4 +17,26 @@ data class UserSession(
     val schoolLogoUrl: String?,
     val bannedReason: String?,
     val deletedReason: String?
-)
+) {
+    val isGuest: Boolean
+        get() = this.uid == GUEST.uid
+
+    companion object {
+        val GUEST = UserSession(
+            uid = "guest_session_id",
+            email = "",
+            status = "",
+            loginMethod = LoginMethod.None,
+            aliasId = null,
+            aliasIndex = null,
+            displayName = null,
+            avatarUrl = null,
+            schoolId = null,
+            schoolName = null,
+            schoolShortName = null,
+            schoolLogoUrl = null,
+            bannedReason = null,
+            deletedReason = null
+        )
+    }
+}

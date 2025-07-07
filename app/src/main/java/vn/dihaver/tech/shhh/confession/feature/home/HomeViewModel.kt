@@ -25,7 +25,7 @@ import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
 import vn.dihaver.tech.shhh.confession.core.domain.home.usecase.GetFeedUseCase
 import vn.dihaver.tech.shhh.confession.core.util.distinctUntilChangedBy
 import vn.dihaver.tech.shhh.confession.feature.home.data.mapper.toUiModel
-import vn.dihaver.tech.shhh.confession.feature.home.ui.model.PostUiModel
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.PostUiModel
 import javax.inject.Inject
 
 @HiltViewModel

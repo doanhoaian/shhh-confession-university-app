@@ -1,4 +1,4 @@
-package vn.dihaver.tech.shhh.confession.feature.home.ui.model
+package vn.dihaver.tech.shhh.confession.feature.post.ui.state
 
 data class PostUiModel(
     val id: String,

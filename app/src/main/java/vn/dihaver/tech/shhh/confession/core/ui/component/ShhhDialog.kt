@@ -83,7 +83,7 @@ fun ShhhDialog(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ShhhLoadingDialogPreview() {
-    ShhhTheme {
+    ShhhTheme(useDarkTheme = true) {
         ShhhLoadingDialog(visible = true, message = "Loading...")
     }
 }
@@ -91,7 +91,7 @@ private fun ShhhLoadingDialogPreview() {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ShhhLoadingDialogWithBackgroundPreview() {
-    ShhhTheme {
+    ShhhTheme(useDarkTheme = true) {
         ShhhLoadingDialog(
             visible = true,
             message = "Loading with background...",
@@ -140,10 +140,10 @@ fun ShhhLoadingDialog(
                     .padding(24.dp)
             ) {
                 if (progress == null) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+                    CircularProgressIndicator(color = if (showBackground) MaterialTheme.colorScheme.inverseSurface else Color.White)
                 } else {
                     CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = if (showBackground) MaterialTheme.colorScheme.inverseSurface else Color.White,
                         progress = { progress },
                         trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                     )
@@ -153,27 +153,12 @@ fun ShhhLoadingDialog(
                     Spacer(Modifier.height(12.dp))
                     Text(
                         text = message,
-                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+                        style = MaterialTheme.typography.bodyMedium.copy(color = if (showBackground) MaterialTheme.colorScheme.onSurface else Color.White.copy(alpha = .8f)),
                         textAlign = TextAlign.Center
                     )
                 }
             }
         }
-    }
-}
-
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun ShhhDialogPreview() {
-    ShhhTheme {
-        ShhhDialog(
-            onDismiss = {},
-            content = { Text("This is the preview content of the dialog.") },
-            confirmText = "Confirm",
-            onConfirm = {},
-            dismissText = "Cancel"
-        )
     }
 }
 

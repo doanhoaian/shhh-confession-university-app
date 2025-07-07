@@ -57,7 +57,7 @@ fun ShhhErrorInternet(
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(ShhhDimens.SpacerMedium))
+        Spacer(Modifier.height(ShhhDimens.SpacerSmall))
         Text(
             text = "Kiểm tra kết nối của bạn và thử lại",
             style = MaterialTheme.typography.bodyMedium,
@@ -97,7 +97,7 @@ fun ShhhErrorUnknown(
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(ShhhDimens.SpacerMedium))
+        Spacer(Modifier.height(ShhhDimens.SpacerSmall))
         Text(
             text = "Có sự cố ngoài ý muốn đã xảy ra. Vui lòng thử lại",
             style = MaterialTheme.typography.bodyMedium,

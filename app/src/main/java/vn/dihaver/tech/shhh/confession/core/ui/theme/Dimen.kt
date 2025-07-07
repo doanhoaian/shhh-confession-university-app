@@ -20,7 +20,7 @@ object ShhhDimens {
     val SpacerExtraLarge = 40.dp
 
     // Sizes
-    val TextFieldHeight = 55.dp
+    val TextFieldHeight = 56.dp
     val ButtonHeight = 48.dp
     val CardCornerRadius = 12.dp
     val CardElevation = 6.dp

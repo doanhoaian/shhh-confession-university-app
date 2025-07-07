@@ -1,4 +1,4 @@
-package vn.dihaver.tech.shhh.confession.feature.post.ui.model
+package vn.dihaver.tech.shhh.confession.feature.post.ui.state
 
 import android.net.Uri
 

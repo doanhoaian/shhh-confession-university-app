@@ -23,9 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,9 +36,8 @@ import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTextField
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTopAppBar
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 import vn.dihaver.tech.shhh.confession.core.util.rememberImagePickerLauncher
-import vn.dihaver.tech.shhh.confession.feature.home.ui.MediaPreviewSection
-import vn.dihaver.tech.shhh.confession.feature.post.ui.model.CreatePostNavEvent
-import vn.dihaver.tech.shhh.confession.feature.post.ui.model.CreatePostUiState
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.CreatePostNavEvent
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.CreatePostUiState
 import vn.dihaver.tech.shhh.confession.feature.post.viewmodel.CreatePostViewModel
 
 @Composable

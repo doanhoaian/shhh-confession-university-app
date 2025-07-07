@@ -6,13 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 
 
-/*@Composable
+@Composable
 fun ShhhTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colors = if (useDarkTheme) DarkColorScheme else LightColorScheme
-    *//*val extraColors = if (useDarkTheme) DarkExtraColorScheme else LightExtraColorScheme*//*
+//    val extraColors = if (useDarkTheme) DarkExtraColorScheme else LightExtraColorScheme
 
     CompositionLocalProvider(LocalExtraColors provides DarkExtraColorScheme) {
         MaterialTheme(
@@ -22,9 +22,9 @@ fun ShhhTheme(
             content = content
         )
     }
-}*/
+}
 
-@Composable
+/*@Composable
 fun ShhhTheme(
     content: @Composable () -> Unit
 ) {
@@ -36,4 +36,4 @@ fun ShhhTheme(
             content = content
         )
     }
-}
+}*/
