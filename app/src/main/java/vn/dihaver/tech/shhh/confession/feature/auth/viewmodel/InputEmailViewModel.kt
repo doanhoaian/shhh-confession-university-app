@@ -13,7 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.CheckEmailUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.CheckEmailUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.core.util.EmailUtils
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel

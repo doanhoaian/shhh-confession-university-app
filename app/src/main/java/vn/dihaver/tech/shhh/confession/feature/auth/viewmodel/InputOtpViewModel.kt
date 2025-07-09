@@ -15,8 +15,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.SendOtpUseCase
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.VerifyOtpUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.SendOtpUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.VerifyOtpUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.OtpType

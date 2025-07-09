@@ -5,7 +5,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 
 @HiltViewModel(assistedFactory = ConfirmInfoViewModel.Factory::class)

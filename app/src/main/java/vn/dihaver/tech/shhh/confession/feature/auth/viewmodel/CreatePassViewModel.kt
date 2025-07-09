@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.ResetPasswordUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.ResetPasswordUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.hashSHA256
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel

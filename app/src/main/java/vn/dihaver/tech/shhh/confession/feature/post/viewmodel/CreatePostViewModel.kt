@@ -16,7 +16,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import vn.dihaver.tech.shhh.confession.core.data.local.database.AppDatabase
 import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
-import vn.dihaver.tech.shhh.confession.core.domain.post.usecase.CreatePostUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.CreatePostUseCase
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.FeedRemoteKeyEntity
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.PostEntity
 import vn.dihaver.tech.shhh.confession.feature.post.data.remote.dto.CreatePostRequest

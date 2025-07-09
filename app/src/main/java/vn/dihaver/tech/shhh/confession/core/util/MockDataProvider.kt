@@ -1,6 +1,6 @@
 package vn.dihaver.tech.shhh.confession.core.util
 
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.LoginMethod
 import vn.dihaver.tech.shhh.confession.feature.comment.ui.state.CommentUiModel
 import vn.dihaver.tech.shhh.confession.feature.post.ui.state.PostUiModel

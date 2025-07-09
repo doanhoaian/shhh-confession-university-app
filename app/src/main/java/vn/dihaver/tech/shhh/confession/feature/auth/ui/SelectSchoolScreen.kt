@@ -49,7 +49,7 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import vn.dihaver.tech.shhh.confession.R
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.School
+import vn.dihaver.tech.shhh.confession.core.domain.model.School
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhButton
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhDialog
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhErrorInternet

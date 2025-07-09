@@ -9,7 +9,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import vn.dihaver.tech.shhh.confession.core.data.local.firebase.AuthManager
 import vn.dihaver.tech.shhh.confession.core.data.repository.BaseRepository
-import vn.dihaver.tech.shhh.confession.core.domain.post.PostRepository
+import vn.dihaver.tech.shhh.confession.core.domain.repository.PostRepository
 import vn.dihaver.tech.shhh.confession.core.util.UnauthorizedException
 import vn.dihaver.tech.shhh.confession.feature.post.data.remote.PostService
 import vn.dihaver.tech.shhh.confession.feature.post.data.remote.dto.CreatePostDto

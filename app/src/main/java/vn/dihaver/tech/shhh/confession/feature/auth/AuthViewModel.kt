@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.Alias
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.School
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.LoginOrRegisterUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.Alias
+import vn.dihaver.tech.shhh.confession.core.domain.model.School
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.LoginOrRegisterUseCase
 import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.hashSHA256
 import vn.dihaver.tech.shhh.confession.core.util.SystemUtils
 import vn.dihaver.tech.shhh.confession.core.util.UnexpectedNullException

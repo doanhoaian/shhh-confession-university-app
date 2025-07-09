@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.LogoutAuthUseCase
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
-import vn.dihaver.tech.shhh.confession.core.domain.home.usecase.GetFeedUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.LogoutAuthUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.FeedItem
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.GetFeedUseCase
 import vn.dihaver.tech.shhh.confession.core.util.distinctUntilChangedBy
 import vn.dihaver.tech.shhh.confession.feature.home.data.mapper.toUiModel
 import vn.dihaver.tech.shhh.confession.feature.post.ui.state.PostUiModel

@@ -11,7 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.LoginMethod
 import javax.inject.Inject
 import javax.inject.Singleton

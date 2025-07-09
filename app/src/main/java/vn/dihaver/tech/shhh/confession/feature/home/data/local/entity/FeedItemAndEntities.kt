@@ -1,7 +1,7 @@
 package vn.dihaver.tech.shhh.confession.feature.home.data.local.entity
 
 import androidx.room.Embedded
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
+import vn.dihaver.tech.shhh.confession.core.domain.model.FeedItem
 import vn.dihaver.tech.shhh.confession.feature.home.data.mapper.toDomain
 
 /**

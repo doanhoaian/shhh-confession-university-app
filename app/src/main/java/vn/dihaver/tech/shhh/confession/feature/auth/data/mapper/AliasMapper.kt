@@ -1,6 +1,6 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.data.mapper
 
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.Alias
+import vn.dihaver.tech.shhh.confession.core.domain.model.Alias
 import vn.dihaver.tech.shhh.confession.feature.auth.data.local.entity.AliasEntity
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.AliasDto
 

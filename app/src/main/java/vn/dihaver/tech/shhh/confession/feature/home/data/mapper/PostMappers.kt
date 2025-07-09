@@ -1,11 +1,11 @@
 package vn.dihaver.tech.shhh.confession.feature.home.data.mapper
 
-import vn.dihaver.tech.shhh.confession.core.domain.post.model.Author
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
-import vn.dihaver.tech.shhh.confession.core.domain.post.model.Post
-import vn.dihaver.tech.shhh.confession.core.domain.post.model.PostStats
-import vn.dihaver.tech.shhh.confession.core.domain.post.model.PostType
-import vn.dihaver.tech.shhh.confession.core.domain.post.model.UserInteraction
+import vn.dihaver.tech.shhh.confession.core.domain.model.Author
+import vn.dihaver.tech.shhh.confession.core.domain.model.FeedItem
+import vn.dihaver.tech.shhh.confession.core.domain.model.Post
+import vn.dihaver.tech.shhh.confession.feature.post.model.PostStats
+import vn.dihaver.tech.shhh.confession.feature.post.model.PostType
+import vn.dihaver.tech.shhh.confession.feature.post.model.UserInteraction
 import vn.dihaver.tech.shhh.confession.core.util.DateTimeUtils.isoToEpochMillis
 import vn.dihaver.tech.shhh.confession.core.util.DateTimeUtils.toRelativeTime
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.InteractionEntity
