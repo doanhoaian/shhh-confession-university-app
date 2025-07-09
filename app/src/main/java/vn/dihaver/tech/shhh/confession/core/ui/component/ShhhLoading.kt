@@ -1,5 +1,6 @@
 package vn.dihaver.tech.shhh.confession.core.ui.component
 
+import androidx.annotation.RawRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -24,6 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
+import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 
 @Composable
@@ -50,6 +56,31 @@ fun PulsePlaceholder(
                 color = highlightColor.copy(alpha = alpha),
                 shape = shape
             )
+    )
+}
+
+@Composable
+fun AnimationLoading(
+    modifier: Modifier = Modifier,
+    @RawRes lottieResId: Int = R.raw.animation_loading
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(lottieResId))
+
+    val infiniteProgress by rememberInfiniteTransition(label = "LottieInfinite").animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ), label = "progress"
+    )
+
+    LottieAnimation(
+        composition = composition,
+        progress = { infiniteProgress },
+        modifier = modifier
+            .size(40.dp)
+            .padding(5.dp)
     )
 }
 

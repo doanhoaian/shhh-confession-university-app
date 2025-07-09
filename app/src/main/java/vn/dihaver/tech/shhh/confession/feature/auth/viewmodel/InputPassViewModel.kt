@@ -1,25 +1,27 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.model.AuthContext
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError
 import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_INVALID_CREDENTIAL
 import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_NETWORK
 import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_USER_DISABLED
 import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_USER_NOT_FOUND
 import vn.dihaver.tech.shhh.confession.feature.auth.model.ResultLogin
 import vn.dihaver.tech.shhh.confession.feature.auth.model.TypeLogin
+import vn.dihaver.tech.shhh.confession.feature.auth.ui.state.InputPassUiState
 
 @HiltViewModel(assistedFactory = InputPassViewModel.Factory::class)
 class InputPassViewModel @AssistedInject constructor(
@@ -30,96 +32,85 @@ class InputPassViewModel @AssistedInject constructor(
         private const val TAG = "AAA-InputPassViewModel"
     }
 
-    var email by mutableStateOf("")
-        private set
-
-    var password by mutableStateOf("")
-        private set
-
-    var isLoading by mutableStateOf(false)
-        private set
-
-    var isError by mutableStateOf(false)
-        private set
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
-
-    var isValidPassword by mutableStateOf(false)
-        private set
+    private val _uiState = MutableStateFlow(InputPassUiState())
+    val uiState: StateFlow<InputPassUiState> = _uiState.asStateFlow()
 
     init {
-        email = authViewModel.email
+        _uiState.update { it.copy(email = authViewModel.email) }
+        listenToAuthChange()
     }
 
     fun onPasswordChange(newPassword: String) {
-        password = newPassword
-        isValidPassword = newPassword.length in 8..20
-        isError = newPassword.isNotEmpty() && !isValidPassword
-        errorMessage = if (isError) {
-            if (newPassword.length < 8) "Mật khẩu phải có ít nhất 8 ký tự"
-            else "Mật khẩu không được quá 20 ký tự"
-        } else null
+        val isValid = newPassword.length in 8..20
+        _uiState.update {
+            it.copy(
+                password = newPassword,
+                isValidPassword = isValid,
+                error = if (newPassword.isNotEmpty() && !isValid) {
+                    if (newPassword.length < 8) "Mật khẩu phải có ít nhất 8 ký tự"
+                    else "Mật khẩu không được quá 20 ký tự"
+                } else null
+            )
+        }
     }
 
-    fun signIn(onNext: () -> Unit) {
-        if (!isValidPassword) {
-            isError = true
-            errorMessage = if (password.length < 8) {
-                "Mật khẩu phải có ít nhất 8 ký tự"
-            } else {
-                "Mật khẩu không được quá 20 ký tự"
-            }
+    fun onSignIn() {
+        val currentState = _uiState.value
+        if (!currentState.isValidPassword) {
+            _uiState.update { it.copy(error = "Mật khẩu không hợp lệ") }
             return
         }
 
+        _uiState.update { it.copy(isLoading = true, error = null) }
+
         viewModelScope.launch {
-            isLoading = true
-            isError = false
-            errorMessage = null
+            authViewModel.signInWithEmail(currentState.email, currentState.password)
+        }
+    }
 
-            try {
-                authViewModel.signInWithEmail(email, password)
+    fun onForgetPassword() {
+        authViewModel.updateAuthContext(AuthContext.Email.ForgetPassword)
+        _uiState.update { it.copy(navigateTo = true) }
+    }
 
-                val endState = authViewModel.authState.first { state ->
-                    (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL) ||
-                            (state is ResultLogin.Error && state.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL)
-                }
+    fun onNavigationHandled() {
+        _uiState.update { it.copy(navigateTo = false) }
+        authViewModel.onAuthEventHandled()
+    }
 
-                when (endState) {
-                    is ResultLogin.Success -> {
-                        isLoading = false
-                        authViewModel.updateAuthContext(AuthContext.Email.Login)
-                        onNext()
+    private fun listenToAuthChange() {
+        viewModelScope.launch {
+            authViewModel.authState.collect { result ->
+                when (result) {
+                    is ResultLogin.Error -> if (result.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL) {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = mapFirebaseErrorToString(result.msgError)
+                            )
+                        }
+                        Log.e(TAG, "Lỗi đăng nhập: ${result.msgError} - ${result.message}")
                     }
 
-                    is ResultLogin.Error -> {
-                        isLoading = false
-                        isError = true
-                        errorMessage = when (endState.msgError) {
-                            ERROR_INVALID_CREDENTIAL -> "Mật khẩu không đúng"
-                            ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
-                            ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
-                            ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
-                            else -> "Có lỗi xảy ra. Vui lòng thử lại"
-                        }
-                        Log.e(TAG, "Lỗi đăng nhập: ${endState.msgError} - ${endState.message}")
+                    is ResultLogin.Success -> if (result.typeLogin == TypeLogin.SIGN_IN_WITH_MAIL) {
+                        authViewModel.updateAuthContext(AuthContext.Email.Login)
+                        _uiState.update { it.copy(isLoading = false, navigateTo = true) }
                     }
 
                     else -> {}
                 }
-            } catch (e: Exception) {
-                isLoading = false
-                isError = true
-                errorMessage = "Có lỗi xảy ra. Vui lòng thử lại"
-                Log.e(TAG, "Lỗi không xác định: ${e.message}")
             }
         }
     }
 
-    fun onForgetPassword(onNext: () -> Unit) {
-        authViewModel.updateAuthContext(AuthContext.Email.ForgetPassword)
-        onNext()
+    private fun mapFirebaseErrorToString(errorCode: MsgError?): String {
+        return when (errorCode) {
+            ERROR_INVALID_CREDENTIAL -> "Mật khẩu không đúng"
+            ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
+            ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
+            ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
+            else -> "Có lỗi xảy ra. Vui lòng thử lại"
+        }
     }
 
     @AssistedFactory

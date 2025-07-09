@@ -1,28 +1,31 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.ResetPasswordUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.ResetPasswordUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.hashSHA256
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.ResetPasswordRequest
 import vn.dihaver.tech.shhh.confession.feature.auth.model.AuthContext
 import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_INVALID_CREDENTIAL
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_NETWORK
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_USER_DISABLED
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_USER_NOT_FOUND
 import vn.dihaver.tech.shhh.confession.feature.auth.model.ResultLogin
 import vn.dihaver.tech.shhh.confession.feature.auth.model.TypeLogin
-import java.io.IOException
+import vn.dihaver.tech.shhh.confession.feature.auth.ui.state.CreatePassUiState
 
 @HiltViewModel(assistedFactory = CreatePassViewModel.Factory::class)
 class CreatePassViewModel @AssistedInject constructor(
@@ -36,158 +39,166 @@ class CreatePassViewModel @AssistedInject constructor(
         private val ALLOWED_CHARS_REGEX = Regex("[A-Za-z0-9${Regex.escape(ALLOWED_SPECIAL_CHARS)}]")
     }
 
-    val authContext: StateFlow<AuthContext> = authViewModel.authContext
-
-    var email by mutableStateOf("")
-        private set
-
-    var password by mutableStateOf("")
-        private set
-
-    var isLoading by mutableStateOf(false)
-        private set
-
-    var isError by mutableStateOf(false)
-        private set
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
-
-    var isValidPassword by mutableStateOf(false)
-        private set
-
-    var hasMinLength by mutableStateOf(false)
-        private set
-
-    var hasRequiredChars by mutableStateOf(false)
-        private set
-
-    private var invalidChars by mutableStateOf(emptySet<Char>())
+    private val _uiState = MutableStateFlow(CreatePassUiState())
+    val uiState: StateFlow<CreatePassUiState> = _uiState.asStateFlow()
 
     init {
-        email = authViewModel.email
+        _uiState.update {
+            it.copy(
+                authContext = authViewModel.authContext.value,
+                email = authViewModel.email
+            )
+        }
+        listenToAuthChange()
     }
 
     fun onPasswordChange(newPassword: String) {
-        password = newPassword
+        _uiState.update { it.copy(password = newPassword) }
         validatePassword()
     }
 
     private fun validatePassword() {
-        invalidChars = password.filter { !it.toString().matches(ALLOWED_CHARS_REGEX) }.toSet()
-        hasMinLength = password.length in 8..20
+        val password = _uiState.value.password
+
+        val invalidChars = password.filter { !it.toString().matches(ALLOWED_CHARS_REGEX) }.toSet()
+        val hasMinLength = password.length in 8..20
         val hasUpperCase = password.any { it.isUpperCase() }
         val hasDigit = password.any { it.isDigit() }
         val hasSpecialChar = password.any { ALLOWED_SPECIAL_CHARS.contains(it) }
-        hasRequiredChars = hasUpperCase && hasDigit && hasSpecialChar
-        isValidPassword = hasMinLength && hasRequiredChars && invalidChars.isEmpty()
+        val hasRequiredChars = hasUpperCase && hasDigit && hasSpecialChar
+        val isValidPassword = hasMinLength && hasRequiredChars && invalidChars.isEmpty()
 
-        isError = password.isNotEmpty() && !isValidPassword
-        errorMessage = when {
-            invalidChars.isNotEmpty() -> "Không được dùng \"${
-                invalidChars.take(3).joinToString(" ")
-            }\" trong mật khẩu"
+        val errorMessage = when {
+            invalidChars.isNotEmpty() -> {
+                "Không được dùng \"${
+                    invalidChars.take(3).joinToString(" ")
+                }\" trong mật khẩu"
+            }
 
             password.isNotEmpty() && !hasMinLength -> {
                 if (password.length < 8) "Mật khẩu phải có ít nhất 8 ký tự"
                 else "Mật khẩu không được quá 20 ký tự"
             }
 
-            password.isNotEmpty() && !hasRequiredChars -> "Mật khẩu phải chứa chữ hoa, số và ký tự đặc biệt"
+            password.isNotEmpty() && !hasRequiredChars -> {
+                "Mật khẩu phải chứa chữ hoa, số và ký tự đặc biệt"
+            }
+
             else -> null
+        }
+
+        _uiState.update {
+            it.copy(
+                hasMinLength = hasMinLength,
+                hasRequiredChars = hasRequiredChars,
+                isValidPassword = isValidPassword,
+                error = errorMessage
+            )
         }
     }
 
-    fun submitPassword(onNext: () -> Unit, onSuccessForgetPassword: () -> Unit) {
-        if (!isValidPassword) {
-            isError = true
-            errorMessage = when {
-                invalidChars.isNotEmpty() -> "Không được dùng \"${
-                    invalidChars.take(3).joinToString(" ")
-                }\" trong mật khẩu"
 
-                !hasMinLength -> if (password.length < 8) "Mật khẩu phải có ít nhất 8 ký tự" else "Mật khẩu không được quá 20 ký tự"
-                !hasRequiredChars -> "Mật khẩu phải chứa chữ hoa, số và ký tự đặc biệt"
-                else -> "Vui lòng kiểm tra lại mật khẩu"
-            }
+    fun onSubmitPassword(onSuccessForgetPassword: () -> Unit) {
+        validatePassword()
+
+        val currentState = _uiState.value
+        if (!currentState.isValidPassword) {
             return
         }
 
+        _uiState.update { it.copy(isLoading = true, error = null) }
+
         viewModelScope.launch {
-            isLoading = true
-            isError = false
-            errorMessage = null
+            when (currentState.authContext) {
+                is AuthContext.Email.Register -> authViewModel.signUpWithEmail(
+                    email = currentState.email,
+                    password = currentState.password
+                )
 
-            try {
-                when (authContext.value) {
-                    is AuthContext.Email.Register -> {
-                        authViewModel.signUpWithEmail(email, password)
-
-                        val endState = authViewModel.authState.first { state ->
-                            (state is ResultLogin.Success && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) ||
-                                    (state is ResultLogin.Error && state.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL)
-                        }
-                        if (endState is ResultLogin.Success) {
-                            isLoading = false
-                            onNext()
-                        } else if (endState is ResultLogin.Error) {
-                            isLoading = false
-                            isError = true
-                            errorMessage = when (endState.msgError) {
-                                MsgError.ERROR_INVALID_CREDENTIAL -> "Thông tin đăng nhập không hợp lệ"
-                                MsgError.ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
-                                MsgError.ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
-                                MsgError.ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
-                                else -> "Có lỗi xảy ra. Vui lòng thử lại"
-                            }
-                            Log.e(
-                                TAG,
-                                "Lỗi đăng nhập: ${endState.msgError} - ${endState.message}"
+                is AuthContext.Email.ForgetPassword -> {
+                    try {
+                        val request = ResetPasswordRequest(
+                            email = currentState.email,
+                            password = currentState.password,
+                            passwordHash = currentState.password.hashSHA256()
+                        )
+                        resetPasswordUseCase.invoke(request)
+                        onSuccessForgetPassword()
+                    } catch (e: ApiException) {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = when (e.code) {
+                                    400 -> "Yêu cầu không hợp lệ"
+                                    409 -> "Email đã được sử dụng"
+                                    429 -> "Quá nhiều yêu cầu. Vui lòng thử lại sau ít phút"
+                                    in 500..599 -> "Lỗi máy chủ. Vui lòng thử lại sau ít phút"
+                                    else -> "Có lỗi xảy ra. Vui lòng thử lại"
+                                }
                             )
                         }
+                        Log.e(TAG, "ApiException: ${e.code} - ${e.message}")
+                    } catch (e: Exception) {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = "Có lỗi xảy ra. Vui lòng thử lại"
+                            )
+                        }
+                        Log.e(TAG, "Lỗi không xác định: ${e.message}")
                     }
+                }
 
-                    is AuthContext.Email.ForgetPassword -> {
-                        val request = ResetPasswordRequest(
-                            email = email,
-                            password = password,
-                            passwordHash = password.hashSHA256()
+                else -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = "Tình huống không hợp lệ :(("
                         )
-                        isLoading = true
-                        resetPasswordUseCase.invoke(request)
-                        isLoading = false
-
-                        onSuccessForgetPassword()
                     }
-
-                    else -> {
-                        isLoading = false
-                        isError = true
-                        errorMessage = "Tình huống không hợp lệ"
-                    }
+                    Log.e(TAG, "Tình huống không hợp lệ: ${currentState.authContext}")
                 }
-            } catch (e: ApiException) {
-                isLoading = false
-                isError = true
-                errorMessage = when (e.code) {
-                    400 -> "Yêu cầu không hợp lệ"
-                    409 -> "Email đã được sử dụng"
-                    429 -> "Quá nhiều yêu cầu. Vui lòng thử lại sau ít phút"
-                    in 500..599 -> "Lỗi máy chủ. Vui lòng thử lại sau ít phút"
-                    else -> "Có lỗi xảy ra. Vui lòng thử lại"
-                }
-                Log.e(TAG, "ApiException: ${e.code} - ${e.message}")
-            } catch (e: IOException) {
-                isLoading = false
-                isError = true
-                errorMessage = "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
-                Log.e(TAG, "IOException: ${e.message}")
-            } catch (e: Exception) {
-                isLoading = false
-                isError = true
-                errorMessage = "Có lỗi xảy ra. Vui lòng thử lại"
-                Log.e(TAG, "Lỗi không xác định: ${e.message}")
             }
+        }
+    }
+
+    fun onNavigationHandled() {
+        _uiState.update { it.copy(navigateTo = false) }
+        authViewModel.onAuthEventHandled()
+    }
+
+    private fun listenToAuthChange() {
+        viewModelScope.launch {
+            authViewModel.authState.collect { result ->
+                when (result) {
+                    is ResultLogin.Error -> if (result.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = mapFirebaseErrorToString(result.msgError)
+                            )
+                        }
+                        Log.e(TAG, "Lỗi đăng ký: ${result.msgError} - ${result.message}")
+                    }
+
+                    is ResultLogin.Success -> if (result.typeLogin == TypeLogin.SIGN_UP_WITH_MAIL) {
+                        authViewModel.updateAuthContext(AuthContext.Email.Login)
+                        _uiState.update { it.copy(isLoading = false, navigateTo = true) }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun mapFirebaseErrorToString(errorCode: MsgError?): String {
+        return when (errorCode) {
+            ERROR_INVALID_CREDENTIAL -> "Thông tin đăng nhập không hợp lệ"
+            ERROR_USER_NOT_FOUND -> "Tài khoản không tồn tại"
+            ERROR_USER_DISABLED -> "Tài khoản đã bị vô hiệu hóa"
+            ERROR_NETWORK -> "Lỗi kết nối mạng. Vui lòng kiểm tra lại"
+            else -> "Có lỗi xảy ra. Vui lòng thử lại"
         }
     }
 

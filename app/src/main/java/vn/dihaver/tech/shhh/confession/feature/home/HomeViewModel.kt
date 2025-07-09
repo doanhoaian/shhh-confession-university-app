@@ -19,22 +19,27 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
-import vn.dihaver.tech.shhh.confession.core.domain.home.usecase.GetFeedUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.LogoutAuthUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.FeedItem
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.GetFeedUseCase
 import vn.dihaver.tech.shhh.confession.core.util.distinctUntilChangedBy
 import vn.dihaver.tech.shhh.confession.feature.home.data.mapper.toUiModel
-import vn.dihaver.tech.shhh.confession.feature.home.ui.model.PostUiModel
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.PostUiModel
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getFeedUseCase: GetFeedUseCase,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val logoutAuthUseCase: LogoutAuthUseCase
 ) : ViewModel() {
 
     private val _selectedTopic = MutableStateFlow<String?>("all")
     val selectedTopic = _selectedTopic.asStateFlow()
+
+    private val _selectedTopicFake = MutableStateFlow<String?>("all")
+    val selectedTopicFake = _selectedTopic.asStateFlow()
 
     private val _userSession = MutableStateFlow<UserSession?>(null)
     val userSession: StateFlow<UserSession?> = _userSession.asStateFlow()
@@ -94,9 +99,20 @@ class HomeViewModel @Inject constructor(
      * @param topicValue Giá trị của danh mục đã được chọn.
      */
     fun onCategorySelected(topicValue: String) {
-        if (_selectedTopic.value != topicValue) {
-            _selectedTopic.value = topicValue
+        if (_selectedTopicFake.value != topicValue) {
+            _selectedTopicFake.value = topicValue
         }
+    }
+
+    fun onLogout(): Boolean {
+        try {
+            viewModelScope.launch {
+                logoutAuthUseCase.invoke()
+            }
+        } catch (e: Exception) {
+            return false
+        }
+        return true
     }
 
     private fun getDynamicHint(): String {

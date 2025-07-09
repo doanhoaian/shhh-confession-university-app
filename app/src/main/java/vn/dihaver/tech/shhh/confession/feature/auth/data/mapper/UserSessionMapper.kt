@@ -1,6 +1,6 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.data.mapper
 
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.UserSessionDto
 
 fun UserSessionDto.toDomain() = UserSession(

@@ -262,7 +262,7 @@ fun ReactionButtons(
                     painter = painterResource(if (currentReaction == ReactionState.LIKED) likeFilledIconRes else likeIconRes),
                     contentDescription = "Like",
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(16.5.dp)
                         .scale(likeScale),
                     tint = likeColor
                 )
@@ -316,6 +316,160 @@ fun ReactionButtons(
                     tint = dislikeColor
                 )
             }
+        }
+    }
+}
+
+
+@Composable
+fun SimpleReactionButtons(
+    initialLikeCount: Long,
+    initialDislikeCount: Long,
+    isLikedInitially: Boolean,
+    isDislikedInitially: Boolean,
+    likeIconRes: Int,
+    likeFilledIconRes: Int,
+    dislikeIconRes: Int,
+    dislikeFilledIconRes: Int
+) {
+    val context = LocalContext.current
+
+    var currentReaction by remember {
+        mutableStateOf(
+            when {
+                isLikedInitially -> ReactionState.LIKED
+                isDislikedInitially -> ReactionState.DISLIKED
+                else -> ReactionState.NONE
+            }
+        )
+    }
+
+    var likeCount by remember { mutableLongStateOf(initialLikeCount) }
+    var dislikeCount by remember { mutableLongStateOf(initialDislikeCount) }
+
+
+    // ---- ANIMATION STATES ----
+    // Animation cho nút LIKE
+    val likeScale by animateFloatAsState(
+        targetValue = if (currentReaction == ReactionState.LIKED) 1.2f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "LikeScale"
+    )
+    val likeColor by animateColorAsState(
+        targetValue = if (currentReaction == ReactionState.LIKED) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = .8f),
+        animationSpec = tween(durationMillis = 200),
+        label = "LikeColor"
+    )
+
+    // Animation cho nút DISLIKE
+    val dislikeScale by animateFloatAsState(
+        targetValue = if (currentReaction == ReactionState.DISLIKED) 1.2f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "DislikeScale"
+    )
+    val dislikeColor by animateColorAsState(
+        targetValue = if (currentReaction == ReactionState.DISLIKED) MaterialTheme.colorScheme.error.copy(alpha = .8f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = .8f),
+        animationSpec = tween(durationMillis = 200),
+        label = "DislikeColor"
+    )
+
+    // ---- CLICK HANDLERS ----
+    fun onLikeClick() {
+        val wasLiked = currentReaction == ReactionState.LIKED
+        val wasDisliked = currentReaction == ReactionState.DISLIKED
+
+        if (wasLiked) {
+            // Đã like -> Bỏ like
+            currentReaction = ReactionState.NONE
+            likeCount--
+        } else {
+            // Chưa like -> Thực hiện like
+            if (wasDisliked) {
+                dislikeCount-- // Nếu trước đó đã dislike thì giảm dislike count
+            }
+            likeCount++
+            currentReaction = ReactionState.LIKED
+        }
+    }
+
+    fun onDislikeClick() {
+        val wasLiked = currentReaction == ReactionState.LIKED
+        val wasDisliked = currentReaction == ReactionState.DISLIKED
+
+        if (wasDisliked) {
+            // Đã dislike -> Bỏ dislike
+            currentReaction = ReactionState.NONE
+            dislikeCount--
+        } else {
+            // Chưa dislike -> Thực hiện dislike
+            if (wasLiked) {
+                likeCount-- // Nếu trước đó đã like thì giảm like count
+            }
+            dislikeCount++
+            currentReaction = ReactionState.DISLIKED
+        }
+    }
+
+    // ---- UI COMPOSITION ----
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Nút LIKE
+        Row(
+            modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = ::onLikeClick
+                )
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(if (currentReaction == ReactionState.LIKED) likeFilledIconRes else likeIconRes),
+                contentDescription = "Like",
+                modifier = Modifier
+                    .size(15.dp)
+                    .scale(likeScale),
+                tint = likeColor
+            )
+            Spacer(Modifier.width(4.dp))
+
+            Text(
+                text = likeCount.formatCountCompact(context),
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = .8f),
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.W500
+                )
+            )
+        }
+
+        // Nút DISLIKE
+        Box(
+            modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = ::onDislikeClick
+                )
+                .padding(horizontal = 6.dp, vertical = 6.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(if (currentReaction == ReactionState.DISLIKED) dislikeFilledIconRes else dislikeIconRes),
+                contentDescription = "Dislike",
+                modifier = Modifier
+                    .size(14.5.dp)
+                    .scale(dislikeScale),
+                tint = dislikeColor
+            )
         }
     }
 }

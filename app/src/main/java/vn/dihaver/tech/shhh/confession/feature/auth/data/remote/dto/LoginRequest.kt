@@ -16,6 +16,8 @@ data class LoginRequest(
 )
 
 enum class LoginMethod {
+    @SerializedName("none")
+    None,
     @SerializedName("email")
     Email,
     @SerializedName("google")

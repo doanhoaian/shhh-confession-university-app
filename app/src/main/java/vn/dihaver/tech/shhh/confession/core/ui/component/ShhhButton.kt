@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,11 +37,15 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhDimens
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 
@@ -56,9 +62,11 @@ private fun ButtonPreview() {
 @Preview(showSystemUi = false, showBackground = false)
 @Composable
 private fun OutlineButtonPreview() {
-    ShhhTheme {
-        ShhhOutlinedButton(label = "Action", isLoading = false) {
+    ShhhTheme(useDarkTheme = true) {
+        Surface {
+            ShhhOutlinedButton(label = "Action", isLoading = false) {
 
+            }
         }
     }
 }
@@ -67,8 +75,10 @@ private fun OutlineButtonPreview() {
 @Composable
 private fun TextButtonPreview() {
     ShhhTheme {
-        ShhhTextButton(label = "Action", isLoading = false, enabled = false) {
+        Surface {
+            ShhhTextButton(label = "Action", isLoading = false, enabled = false) {
 
+            }
         }
     }
 }
@@ -107,8 +117,7 @@ fun ShhhButton(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier.widthIn(max = maxButtonWidth)
             .fillMaxWidth()
-            .height(ShhhDimens.ButtonHeight)
-            .clickable(enabled = enabled && !isLoading) { onClick() },
+            .height(ShhhDimens.ButtonHeight),
         contentPadding = PaddingValues(horizontal = ShhhDimens.SpacerMedium)
     ) {
         if (isLoading) {
@@ -187,7 +196,7 @@ fun ShhhOutlinedButton(
     isLoading: Boolean = false,
     onClick: () -> Unit
 ) {
-    val contentColor = if (enabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimary.copy(alpha = .6f)
+    val contentColor = if (enabled) MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.inverseSurface.copy(alpha = .6f)
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
@@ -199,8 +208,7 @@ fun ShhhOutlinedButton(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier.widthIn(max = maxButtonWidth)
             .fillMaxWidth()
-            .height(ShhhDimens.ButtonHeight)
-            .clickable(enabled = enabled && !isLoading) { onClick() },
+            .height(ShhhDimens.ButtonHeight),
         contentPadding = PaddingValues(horizontal = ShhhDimens.SpacerMedium),
         border = BorderStroke(ShhhDimens.StrokeSmall, MaterialTheme.colorScheme.primary),
         colors = ButtonDefaults.outlinedButtonColors(
@@ -213,7 +221,7 @@ fun ShhhOutlinedButton(
             CircularProgressIndicator(
                 modifier = Modifier.size(ShhhDimens.IconSizeSmall),
                 strokeWidth = ShhhDimens.StrokeMedium,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.inverseSurface
             )
         } else {
             Row(
@@ -287,7 +295,6 @@ fun ShhhTextButton(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier
             .height(ShhhDimens.ButtonHeight)
-            .clickable(enabled = enabled && !isLoading) { onClick() }
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.textButtonColors(
             contentColor = contentColor
@@ -312,5 +319,43 @@ fun ShhhTextButton(
                 overflow = TextOverflow.Ellipsis
             )
         }
+    }
+}
+
+
+@Composable
+fun ShhhSimpleTextWithIcon(
+    text: String,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.W600),
+    iconRes: Int,
+    iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    iconSize: Dp = 16.dp,
+    spacing: Dp = 4.dp,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fadeClick { onClick() }
+    ) {
+        Text(
+            text = text,
+            style = textStyle
+        )
+        Spacer(Modifier.width(spacing))
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(iconSize),
+            tint = iconTint
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ShhhSimpleTextWithIconPreview() {
+    ShhhTheme {
+        ShhhSimpleTextWithIcon(text = "Like", iconRes = R.drawable.svg_font_check, onClick = {})
     }
 }

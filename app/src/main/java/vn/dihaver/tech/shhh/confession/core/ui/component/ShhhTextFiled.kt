@@ -103,6 +103,7 @@ private fun ButtonPreview() {
             ShhhTextField(
                 value = text,
                 onValueChange = { text = it },
+                style = ShhhTextFieldStyle.Outlined,
                 hint = "Nhập tin nhắn...",
                 lines = 4,
                 autoGrow = true
@@ -111,13 +112,21 @@ private fun ButtonPreview() {
     }
 }
 
+sealed interface ShhhTextFieldStyle {
+    data object Filled : ShhhTextFieldStyle
+    data object Transparent : ShhhTextFieldStyle
+    data object Outlined : ShhhTextFieldStyle
+}
+
 @Composable
 fun ShhhTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    style: ShhhTextFieldStyle = ShhhTextFieldStyle.Filled,
     hint: String = "",
     lines: Int = 1,
+    maxLength: Int = Int.MAX_VALUE,
     autoGrow: Boolean = false,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
@@ -126,10 +135,9 @@ fun ShhhTextField(
     errorMessage: String? = null,
     isPassword: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     val shape = MaterialTheme.shapes.large
-    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
     val textColor = MaterialTheme.colorScheme.onSurface
     val hintColor = MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -141,17 +149,32 @@ fun ShhhTextField(
     val isFocused by interactionSource.collectIsFocusedAsState()
     val isErrorVisible = isError && value.isNotEmpty()
 
+    val backgroundColor = when (style) {
+        is ShhhTextFieldStyle.Filled -> MaterialTheme.colorScheme.surfaceVariant
+        is ShhhTextFieldStyle.Transparent -> Color.Transparent
+        is ShhhTextFieldStyle.Outlined -> Color.Transparent
+    }
+
     val animatedBorderColor by animateColorAsState(
-        targetValue = when {
-            isErrorVisible -> MaterialTheme.colorScheme.error
-            isFocused -> MaterialTheme.colorScheme.primary
-            else -> Color.Transparent
+        targetValue = when (style) {
+            is ShhhTextFieldStyle.Transparent -> Color.Transparent
+            is ShhhTextFieldStyle.Outlined -> when {
+                isErrorVisible -> MaterialTheme.colorScheme.error
+                isFocused -> MaterialTheme.colorScheme.primary
+                else -> MaterialTheme.colorScheme.outline
+            }
+            is ShhhTextFieldStyle.Filled -> when {
+                isErrorVisible -> MaterialTheme.colorScheme.error
+                isFocused -> MaterialTheme.colorScheme.primary
+                else -> Color.Transparent
+            }
         },
         label = "borderColor"
     )
 
     val baseModifier = modifier
         .fillMaxWidth()
+        .padding(0.dp)
         .clip(shape)
         .border(ShhhDimens.StrokeSmall, animatedBorderColor, shape)
         .then(
@@ -168,9 +191,41 @@ fun ShhhTextField(
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
+    val trailingIconSlot: (@Composable (() -> Unit))? = when {
+        trailingIcon != null -> {
+            {
+                Icon(
+                    imageVector = trailingIcon,
+                    contentDescription = null,
+                    tint = textColor
+                )
+            }
+        }
+
+        isPassword -> {
+            {
+                val visibilityIcon =
+                    if (passwordVisible) R.drawable.svg_font_fill_visibility_off else R.drawable.svg_font_fill_visibility
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        painter = painterResource(visibilityIcon),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentDescription = if (passwordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu"
+                    )
+                }
+            }
+        }
+
+        else -> null
+    }
+
     TextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = {
+            if (it.length <= maxLength) {
+                onValueChange(it)
+            }
+        },
         modifier = baseModifier,
         interactionSource = interactionSource,
         shape = shape,
@@ -197,29 +252,7 @@ fun ShhhTextField(
                 )
             }
         },
-        trailingIcon = {
-            when {
-                trailingIcon != null -> {
-                    Icon(
-                        imageVector = trailingIcon,
-                        contentDescription = null,
-                        tint = textColor
-                    )
-                }
-
-                isPassword -> {
-                    val visibilityIcon =
-                        if (passwordVisible) R.drawable.svg_font_fill_visibility_off else R.drawable.svg_font_fill_visibility
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(
-                            painter = painterResource(visibilityIcon),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            contentDescription = if (passwordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu"
-                        )
-                    }
-                }
-            }
-        },
+        trailingIcon = trailingIconSlot,
         enabled = enabled,
         isError = isErrorVisible,
         visualTransformation = when {
@@ -262,91 +295,5 @@ fun ShhhTextField(
                 .fillMaxWidth()
                 .padding(top = 4.dp, start = 12.dp)
         )
-    }
-}
-
-@Composable
-fun OtpTextField(
-    otpLength: Int = 6,
-    onOtpComplete: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    require(otpLength in listOf(4, 6)) { "Chỉ hỗ trợ 4 hoặc 6 ký tự" }
-
-    val focusRequesters = remember { List(otpLength) { FocusRequester() } }
-    val previousValue = remember { mutableStateOf("") }
-    val otpValues = remember { mutableStateListOf(*Array(otpLength) { "" }) }
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        for (index in 0 until otpLength) {
-            val isFocused = remember { mutableStateOf(false) }
-
-            TextField(
-                value = otpValues[index],
-                onValueChange = { newValue ->
-                    val isDeleting = newValue.length < previousValue.value.length
-                    previousValue.value = newValue
-
-                    when {
-                        isDeleting -> {
-                            otpValues[index] = ""
-                            if (index > 0) {
-                                focusRequesters[index - 1].requestFocus()
-                            }
-                        }
-                        newValue.length == 1 && newValue.all { it.isDigit() } -> {
-                            otpValues[index] = newValue
-                            if (index < otpLength - 1) {
-                                focusRequesters[index + 1].requestFocus()
-                            } else if (otpValues.all { it.isNotEmpty() }) {
-                                onOtpComplete(otpValues.joinToString(""))
-                            }
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .width(48.dp)
-                    .height(56.dp)
-                    .focusRequester(focusRequesters[index])
-                    .focusProperties {
-                        // Không cho phép focus nếu trước đó chưa nhập
-                        canFocus = index == 0 || otpValues[index - 1].isNotEmpty()
-                    }
-                    .onKeyEvent { event ->
-                        if (event.type == KeyEventType.KeyDown &&
-                            event.key == Key.Backspace &&
-                            otpValues[index].isEmpty()
-                        ) {
-                            if (index > 0) {
-                                focusRequesters[index - 1].requestFocus()
-                            }
-                        }
-                        false
-                    },
-                textStyle = MaterialTheme.typography.headlineMedium.copy(
-                    textAlign = TextAlign.Center
-                ),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = if (index == otpLength - 1) ImeAction.Done else ImeAction.Next
-                ),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-    }
-
-    // Auto-focus đầu tiên khi hiển thị
-    LaunchedEffect(Unit) {
-        focusRequesters.first().requestFocus()
     }
 }

@@ -14,6 +14,8 @@ android {
     namespace = "vn.dihaver.tech.shhh.confession"
     compileSdk = 35
 
+    flavorDimensions("version")
+
     defaultConfig {
         applicationId = "vn.dihaver.tech.shhh.confession"
         minSdk = 24
@@ -26,7 +28,18 @@ android {
         // BuildConfig
         buildConfigField("int", "VERSION_CODE", versionCode.toString())
         buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
-        buildConfigField("String", "BASE_URL", "\"http://192.168.100.19:3000/api/\"")
+        buildConfigField("String", "BASE_URL", "\"https://stunning-essence-production.up.railway.app/api/\"")
+    }
+
+    productFlavors {
+        create("mock") {
+            dimension = "version"
+            applicationIdSuffix = ".mock"
+            versionNameSuffix = "-mock"
+        }
+        create("prod") {
+            dimension = "version"
+        }
     }
 
     buildTypes {
@@ -70,6 +83,7 @@ dependencies {
     implementation(libs.nav.fragment)
     implementation(libs.coil.compose)
     implementation(libs.nav.ui)
+    implementation(libs.lottie.compose)
 
     // Splash
     implementation(libs.splash)

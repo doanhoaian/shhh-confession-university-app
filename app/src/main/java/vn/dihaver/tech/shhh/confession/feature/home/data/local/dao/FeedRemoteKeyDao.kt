@@ -60,40 +60,41 @@ interface FeedRemoteKeyDao {
     @Transaction
     @Query(
         """
-        SELECT 
-            p.id AS post_id, 
-            p.userId AS post_userId,
-            p.schoolId AS post_schoolId,
-            p.postType AS post_postType,
-            p.avatarUrl AS post_avatarUrl,
-            p.displayName AS post_displayName,
-            p.schoolShortName AS post_schoolShortName,
-            p.content AS post_content,
-            p.images AS post_images,
-            p.status AS post_status,
-            p.commentPermission AS post_commentPermission,
-            p.viewPermission AS post_viewPermission,
-            p.totalLike AS post_totalLike,
-            p.totalDislike AS post_totalDislike,
-            p.totalComment AS post_totalComment,
-            p.createdAt AS post_createdAt,
-            p.updatedAt AS post_updatedAt,
-            p.lastUpdated AS post_lastUpdated,
-            
-            i.postId AS interaction_postId,
-            i.userId AS interaction_userId,
-            i.isLiked AS interaction_isLiked,
-            i.isDisliked AS interaction_isDisliked
+    SELECT 
+        p.id AS post_id, 
+        p.userId AS post_userId,
+        p.schoolId AS post_schoolId,
+        p.postType AS post_postType,
+        p.avatarUrl AS post_avatarUrl,
+        p.displayName AS post_displayName,
+        p.schoolShortName AS post_schoolShortName,
+        p.content AS post_content,
+        p.images AS post_images,
+        p.status AS post_status,
+        p.commentPermission AS post_commentPermission,
+        p.viewPermission AS post_viewPermission,
+        p.totalLike AS post_totalLike,
+        p.totalDislike AS post_totalDislike,
+        p.totalComment AS post_totalComment,
+        p.createdAt AS post_createdAt,
+        p.updatedAt AS post_updatedAt,
+        p.lastUpdated AS post_lastUpdated,
 
-        FROM posts AS p
-        INNER JOIN feed_remote_keys AS rk ON p.id = rk.postId
-        LEFT JOIN user_interactions AS i ON p.id = i.postId AND i.userId = :currentUserId
-        WHERE rk.version = :version
-        ORDER BY rk.orderInFeed ASC
+        i.postId AS interaction_postId,
+        i.userId AS interaction_userId,
+        i.isLiked AS interaction_isLiked,
+        i.isDisliked AS interaction_isDisliked
+
+    FROM feed_remote_keys AS rk
+    INNER JOIN posts AS p ON rk.postId = p.id
+    LEFT JOIN user_interactions AS i ON p.id = i.postId AND i.userId = :currentUserId
+    WHERE rk.version = :version
+    ORDER BY rk.orderInFeed ASC
     """
     )
     fun pagingSource(
         version: String,
         currentUserId: String?
     ): PagingSource<Int, FeedItemAndEntities>
+
 }

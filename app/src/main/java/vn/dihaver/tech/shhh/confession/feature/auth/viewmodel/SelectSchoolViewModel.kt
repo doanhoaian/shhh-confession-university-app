@@ -13,14 +13,13 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.School
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.GetAllSchoolsUseCase
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.UpdateSchoolUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.School
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.GetAllSchoolsUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.UpdateSchoolUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.core.util.SystemUtils.isNetworkAvailable
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.UpdateSchoolRequest
-import vn.dihaver.tech.shhh.confession.feature.auth.viewmodel.SelectAliasViewModel.FetchErrorType
 import java.io.IOException
 
 @HiltViewModel(assistedFactory = SelectSchoolViewModel.Factory::class)

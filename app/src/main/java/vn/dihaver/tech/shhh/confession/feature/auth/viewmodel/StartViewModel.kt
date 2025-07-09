@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.CancellationSignal
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CredentialManagerCallback
 import androidx.credentials.CustomCredential
@@ -20,16 +21,24 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import vn.dihaver.tech.shhh.confession.R
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.model.AuthContext
 import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError
-import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.*
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_EMAIL_ALREADY_IN_USE
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_EMAIL_NOT_VERIFY
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_INVALID_CREDENTIAL
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_NETWORK
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_UNCERTAIN
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_USER_DISABLED
+import vn.dihaver.tech.shhh.confession.feature.auth.model.MsgError.ERROR_USER_NOT_FOUND
 import vn.dihaver.tech.shhh.confession.feature.auth.model.ResultLogin
 import vn.dihaver.tech.shhh.confession.feature.auth.model.TypeLogin
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 
 @HiltViewModel(assistedFactory = StartViewModel.Factory::class)
@@ -40,8 +49,6 @@ class StartViewModel @AssistedInject constructor(
     companion object {
         private const val TAG = "AAA-StartViewModel"
     }
-
-    val authContext: StateFlow<AuthContext> = authViewModel.authContext
 
     var isLoading = MutableStateFlow(false)
         private set
@@ -99,17 +106,47 @@ class StartViewModel @AssistedInject constructor(
         updateState(loading = true)
 
         viewModelScope.launch {
-            val webClientId = context.getString(R.string.app_web_client_id)
-            val googleIdOption = GetGoogleIdOption.Builder()
-                .setServerClientId(webClientId)
-                .setFilterByAuthorizedAccounts(false)
-                .build()
+            try {
+                val credential = getGoogleCredential(context)
 
-            val request = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
-                .build()
+                if (credential is CustomCredential &&
+                    credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+                ) {
+                    val googleIdTokenCredential =
+                        GoogleIdTokenCredential.createFrom(credential.data)
 
-            val cancellationSignal = CancellationSignal()
+                    authViewModel.signInWithGoogle(googleIdTokenCredential.idToken)
+                } else {
+                    updateState(error = "Không thể khởi tạo xác thực Google")
+                }
+
+            } catch (e: GetCredentialCancellationException) {
+                stateIdle()
+            } catch (e: Exception) {
+                updateState(error = "Không thể khởi tạo xác thực Google")
+            }
+        }
+    }
+
+    fun stateIdle() {
+        updateState()
+    }
+
+    private suspend fun getGoogleCredential(context: Context): Credential {
+        val webClientId = context.getString(R.string.app_web_client_id)
+
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setServerClientId(webClientId)
+            .setFilterByAuthorizedAccounts(false)
+            .build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        val cancellationSignal = CancellationSignal()
+
+        return suspendCancellableCoroutine { continuation ->
             CredentialManager.create(context).getCredentialAsync(
                 context = context,
                 request = request,
@@ -118,31 +155,21 @@ class StartViewModel @AssistedInject constructor(
                 callback = object :
                     CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
                     override fun onResult(result: GetCredentialResponse) {
-                        val credential = result.credential
-                        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                            val googleIdTokenCredential =
-                                GoogleIdTokenCredential.createFrom(credential.data)
-                            authViewModel.signInWithGoogle(googleIdTokenCredential.idToken)
-                        } else {
-                            updateState(error = "Không thể khởi tạo xác thực Google")
-                        }
+                        continuation.resume(result.credential)
                     }
 
                     override fun onError(e: GetCredentialException) {
-                        if (e is GetCredentialCancellationException) {
-                            stateIdle()
-                        } else {
-                            updateState(error = "Không thể khởi tạo xác thực Google")
-                        }
+                        continuation.resumeWithException(e)
                     }
                 }
             )
+
+            continuation.invokeOnCancellation {
+                cancellationSignal.cancel()
+            }
         }
     }
 
-    fun stateIdle() {
-        updateState()
-    }
 
     private fun updateState(
         loading: Boolean = false,

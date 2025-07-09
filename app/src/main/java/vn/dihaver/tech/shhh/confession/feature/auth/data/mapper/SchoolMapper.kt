@@ -1,6 +1,6 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.data.mapper
 
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.School
+import vn.dihaver.tech.shhh.confession.core.domain.model.School
 import vn.dihaver.tech.shhh.confession.feature.auth.data.local.entity.SchoolEntity
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.SchoolDto
 

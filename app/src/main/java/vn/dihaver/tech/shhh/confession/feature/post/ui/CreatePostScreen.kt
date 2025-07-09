@@ -23,9 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,13 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import vn.dihaver.tech.shhh.confession.R
+import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhDialog
+import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhLoadingDialog
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTextField
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhTopAppBar
 import vn.dihaver.tech.shhh.confession.core.ui.theme.ShhhTheme
 import vn.dihaver.tech.shhh.confession.core.util.rememberImagePickerLauncher
-import vn.dihaver.tech.shhh.confession.feature.home.ui.MediaPreviewSection
-import vn.dihaver.tech.shhh.confession.feature.post.ui.model.CreatePostNavEvent
-import vn.dihaver.tech.shhh.confession.feature.post.ui.model.CreatePostUiState
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.CreatePostNavEvent
+import vn.dihaver.tech.shhh.confession.feature.post.ui.state.CreatePostUiState
 import vn.dihaver.tech.shhh.confession.feature.post.viewmodel.CreatePostViewModel
 
 @Composable
@@ -48,6 +46,8 @@ fun CreatePostScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(key1 = viewModel.navEvent) {
         viewModel.navEvent.collect { event ->
@@ -56,6 +56,22 @@ fun CreatePostScreen(
                     onBack()
                 }
             }
+        }
+    }
+
+    if (isLoading) {
+        ShhhLoadingDialog(visible = true, message = "Đang đăng bài...")
+    }
+
+    errorMessage?.let {
+        ShhhDialog(
+            onDismiss = { viewModel.dismissErrorDialog() },
+            confirmText = "OK",
+            onConfirm = { viewModel.dismissErrorDialog() }
+        ) {
+            Text("Lỗi", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(it)
         }
     }
 

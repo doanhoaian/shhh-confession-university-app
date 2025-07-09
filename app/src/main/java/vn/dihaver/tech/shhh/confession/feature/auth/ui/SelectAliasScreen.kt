@@ -1,6 +1,5 @@
 package vn.dihaver.tech.shhh.confession.feature.auth.ui
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import vn.dihaver.tech.shhh.confession.R
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.Alias
+import vn.dihaver.tech.shhh.confession.core.domain.model.Alias
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhButton
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhDialog
 import vn.dihaver.tech.shhh.confession.core.ui.component.ShhhErrorInternet

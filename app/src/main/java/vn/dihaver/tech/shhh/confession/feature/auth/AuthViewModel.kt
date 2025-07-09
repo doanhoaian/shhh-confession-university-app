@@ -2,7 +2,6 @@ package vn.dihaver.tech.shhh.confession.feature.auth
 
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -17,15 +16,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.Alias
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.School
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.UserSession
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.LoginOrRegisterUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.Alias
+import vn.dihaver.tech.shhh.confession.core.domain.model.School
+import vn.dihaver.tech.shhh.confession.core.domain.model.UserSession
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.LoginOrRegisterUseCase
 import vn.dihaver.tech.shhh.confession.core.util.FormatUtils.hashSHA256
 import vn.dihaver.tech.shhh.confession.core.util.SystemUtils
+import vn.dihaver.tech.shhh.confession.core.util.UnexpectedNullException
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.LoginMethod
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.LoginRequest
 import vn.dihaver.tech.shhh.confession.feature.auth.model.AuthContext
@@ -58,7 +58,6 @@ class AuthViewModel @Inject constructor(
     private val _currentStep = MutableStateFlow(
         savedStateHandle.get<String>("currentStep")?.let { AuthStep.valueOf(it) } ?: AuthStep.START
     )
-    val currentStep: StateFlow<AuthStep> = _currentStep
 
     private val _authContext = MutableStateFlow(
         savedStateHandle.get<String>("authContext")?.parseAuthContext() ?: AuthContext.None
@@ -77,6 +76,15 @@ class AuthViewModel @Inject constructor(
                 _userSession.value = session
             }
         }
+    }
+
+    override fun onCleared() {
+        Log.d(TAG, "AuthViewModel cleared")
+        super.onCleared()
+    }
+
+    fun onAuthEventHandled() {
+        _authState.value = ResultLogin.Idle
     }
 
 
@@ -116,7 +124,7 @@ class AuthViewModel @Inject constructor(
             savedStateHandle["currentStep"] = previousStep.name
             Log.d(
                 TAG,
-                "Quay lại bước trước: Đã lấy ${previousStep.name}, Sau - Bước hiện tại=${_currentStep.value?.name}, Stack=${_stepStack.joinToString()}"
+                "Quay lại bước trước: Đã lấy ${previousStep.name}, Sau - Bước hiện tại=${_currentStep.value.name}, Stack=${_stepStack.joinToString()}"
             )
         } else {
             Log.w(TAG, "Quay lại bước trước: Stack rỗng, không thực hiện hành động")
@@ -176,66 +184,72 @@ class AuthViewModel @Inject constructor(
     }
 
     suspend fun updateSessionSchool(newSchool: School) {
-        sessionManager.saveSchoolInfo(newSchool.id, newSchool.name, newSchool.shortName, newSchool.imageUrl)
+        sessionManager.saveSchoolInfo(
+            newSchool.id,
+            newSchool.name,
+            newSchool.shortName,
+            newSchool.imageUrl
+        )
     }
 
-    fun signUpWithEmail(email: String, password: String) {
+    suspend fun signUpWithEmail(email: String, password: String) {
         _authState.value = ResultLogin.Loading(TypeLogin.SIGN_UP_WITH_MAIL)
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userFb = firebaseAuth.currentUser
-                    requestLogin(
-                        userFb = userFb!!,
-                        typeLogin = TypeLogin.SIGN_UP_WITH_MAIL,
-                        password = password,
-                        method = LoginMethod.Email
-                    )
-                } else {
-                    _authState.value =
-                        handleFirebaseAuthException(TypeLogin.SIGN_UP_WITH_MAIL, task.exception)
-                }
-            }
+        try {
+            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            val userFb = authResult.user
+            if (userFb != null) {
+                requestLogin(
+                    userFb = userFb,
+                    typeLogin = TypeLogin.SIGN_UP_WITH_MAIL,
+                    password = password,
+                    method = LoginMethod.Email
+                )
+            } else throw UnexpectedNullException()
+        } catch (e: Exception) {
+            _authState.value =
+                handleFirebaseAuthException(TypeLogin.SIGN_UP_WITH_MAIL, e)
+        }
     }
 
-    fun signInWithEmail(email: String, password: String) {
+    suspend fun signInWithEmail(email: String, password: String) {
         _authState.value = ResultLogin.Loading(TypeLogin.SIGN_IN_WITH_MAIL)
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userFb = firebaseAuth.currentUser
-                    requestLogin(
-                        userFb = userFb!!,
-                        typeLogin = TypeLogin.SIGN_IN_WITH_MAIL,
-                        password = password,
-                        method = LoginMethod.Email
-                    )
-                } else {
-                    _authState.value =
-                        handleFirebaseAuthException(TypeLogin.SIGN_IN_WITH_MAIL, task.exception)
-                }
-            }
+        try {
+            val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            val userFb = authResult.user
+            if (userFb != null) {
+                requestLogin(
+                    userFb = userFb,
+                    typeLogin = TypeLogin.SIGN_IN_WITH_MAIL,
+                    password = password,
+                    method = LoginMethod.Email
+                )
+            } else throw UnexpectedNullException()
+        } catch (e: Exception) {
+            _authState.value = handleFirebaseAuthException(TypeLogin.SIGN_IN_WITH_MAIL, e)
+        }
     }
 
-    fun signInWithGoogle(idToken: String) {
+    suspend fun signInWithGoogle(idToken: String) {
         _authState.value = ResultLogin.Loading(TypeLogin.SIGN_IN_WITH_GOOGLE)
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        firebaseAuth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userFb = firebaseAuth.currentUser
-                    requestLogin(
-                        userFb = userFb!!,
-                        typeLogin = TypeLogin.SIGN_IN_WITH_GOOGLE,
-                        password = "",
-                        method = LoginMethod.Google
-                    )
-                } else {
-                    _authState.value =
-                        handleFirebaseAuthException(TypeLogin.SIGN_IN_WITH_GOOGLE, task.exception)
-                }
-            }
+        try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val authResult = firebaseAuth.signInWithCredential(credential).await()
+            val userFb = authResult.user
+            if (userFb != null) {
+                requestLogin(
+                    userFb = userFb,
+                    typeLogin = TypeLogin.SIGN_IN_WITH_GOOGLE,
+                    password = "",
+                    method = LoginMethod.Google
+                )
+            } else throw UnexpectedNullException()
+        } catch (e: Exception) {
+            _authState.value =
+                handleFirebaseAuthException(TypeLogin.SIGN_IN_WITH_GOOGLE, e)
+        }
     }
+
+
 
     private fun handleFirebaseAuthException(
         typeLogin: TypeLogin,
@@ -495,10 +509,5 @@ class AuthViewModel @Inject constructor(
                 return NavRoutes.Home.GRAPH
             }
         }
-    }
-
-    override fun onCleared() {
-        Log.d(TAG, "AuthViewModel cleared")
-        super.onCleared()
     }
 }

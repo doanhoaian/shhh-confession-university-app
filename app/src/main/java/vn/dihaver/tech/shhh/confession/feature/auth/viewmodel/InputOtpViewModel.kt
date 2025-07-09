@@ -15,8 +15,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.SendOtpUseCase
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.VerifyOtpUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.SendOtpUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.VerifyOtpUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel
 import vn.dihaver.tech.shhh.confession.feature.auth.data.remote.dto.OtpType
@@ -39,8 +39,7 @@ class InputOtpViewModel @AssistedInject constructor(
 
     val authContext: StateFlow<AuthContext> = authViewModel.authContext
 
-    var otpType by mutableStateOf(OtpType.VERIFY_EMAIL)
-        private set
+    private var otpType by mutableStateOf(OtpType.VERIFY_EMAIL)
 
     var email by mutableStateOf("")
         private set
@@ -51,8 +50,7 @@ class InputOtpViewModel @AssistedInject constructor(
     var isLoading by mutableStateOf(false)
         private set
 
-    var hasOtpSentSuccessfully by mutableStateOf(false)
-        private set
+    private var hasOtpSentSuccessfully by mutableStateOf(false)
 
     var cooldown by mutableIntStateOf(0)
         private set

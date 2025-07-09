@@ -13,9 +13,9 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import vn.dihaver.tech.shhh.confession.core.domain.auth.model.Alias
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.GetAllAliasesUseCase
-import vn.dihaver.tech.shhh.confession.core.domain.auth.usecase.UpdateAliasUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.model.Alias
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.GetAllAliasesUseCase
+import vn.dihaver.tech.shhh.confession.core.domain.usecase.UpdateAliasUseCase
 import vn.dihaver.tech.shhh.confession.core.util.ApiException
 import vn.dihaver.tech.shhh.confession.core.util.SystemUtils.isNetworkAvailable
 import vn.dihaver.tech.shhh.confession.feature.auth.AuthViewModel

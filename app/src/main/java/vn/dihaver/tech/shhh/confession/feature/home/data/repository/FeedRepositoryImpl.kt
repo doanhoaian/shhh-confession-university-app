@@ -16,8 +16,8 @@ import vn.dihaver.tech.shhh.confession.core.data.local.database.AppDatabase
 import vn.dihaver.tech.shhh.confession.core.data.local.datastore.SessionManager
 import vn.dihaver.tech.shhh.confession.core.data.local.firebase.AuthManager
 import vn.dihaver.tech.shhh.confession.core.data.repository.BaseRepository
-import vn.dihaver.tech.shhh.confession.core.domain.home.model.FeedItem
-import vn.dihaver.tech.shhh.confession.core.domain.home.repository.FeedRepository
+import vn.dihaver.tech.shhh.confession.core.domain.model.FeedItem
+import vn.dihaver.tech.shhh.confession.core.domain.repository.FeedRepository
 import vn.dihaver.tech.shhh.confession.core.util.UnauthorizedException
 import vn.dihaver.tech.shhh.confession.feature.home.data.local.entity.InteractionEntity
 import vn.dihaver.tech.shhh.confession.feature.home.data.pager.FeedRemoteMediator
